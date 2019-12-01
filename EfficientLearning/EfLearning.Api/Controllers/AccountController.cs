@@ -24,7 +24,7 @@ namespace EfLearning.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : Controller
     {
         private readonly ICustomIdentityManager _userManager;
         private SignInManager<AppUser> _signInManager;
@@ -57,7 +57,7 @@ namespace EfLearning.Api.Controllers
             UserResponse userResponse = await _userManager.CreateStudentAsync(user,model.Password);
             if (userResponse.Success)
             {
-                return Ok(userResponse.User);
+                return Ok(userResponse.Success);
             }
             else
             {

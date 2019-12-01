@@ -32,8 +32,11 @@ namespace EfLearning.Api
         {
             var inst = new Installer();
             inst.InstallDb(services, Configuration);
-            inst.InstallIdentity(services);
-            inst.InstallJwt(services, Configuration);
+            inst.MvcInstaller(services, Configuration);
+            inst.InstallSwagger(services, Configuration);
+
+
+
             services.AddScoped<IRefreshTokenDal, RefreshTokenDal>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICustomIdentityManager, CustomIdentityManager>();
@@ -48,7 +51,7 @@ namespace EfLearning.Api
                     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,10 +62,24 @@ namespace EfLearning.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseAuthentication();
-            app.UseCors();
-            app.UseMvc();
 
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseAuthentication();
+
+
+            var swaggerOptions = new SwaggerOptions();
+            Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
+
+            app.UseSwagger(option => { option.RouteTemplate = swaggerOptions.JsonRoute; });
+            
+            app.UseSwaggerUI(option =>
+            {
+                option.SwaggerEndpoint(swaggerOptions.UiEndpoint, swaggerOptions.Description);
+            });
+            app.UseMvc();
 
         }
     }

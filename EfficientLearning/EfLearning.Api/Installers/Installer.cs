@@ -5,11 +5,17 @@ using EfLearning.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using TokenOptions = EfLearning.Api.Security.TokenOptions;
 
@@ -20,14 +26,12 @@ namespace EfLearning.Api.Installers
         public void InstallDb(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<EfContext>(options =>
-             options.UseSqlServer(configuration.GetConnectionString("IdentityConnection")));
+               options.UseSqlServer(
+                   configuration.GetConnectionString("IdentityConnection")));
+            services.AddDefaultIdentity<AppUser>()
+                .AddRoles<AppRole>()
+                .AddEntityFrameworkStores<EfContext>();
 
-           
-        }
-        public void InstallIdentity(IServiceCollection services)
-        {
-            services.AddIdentity<AppUser, AppRole>()
-               .AddEntityFrameworkStores<EfContext>();
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -42,11 +46,14 @@ namespace EfLearning.Api.Installers
                 options.SignIn.RequireConfirmedEmail = false;
             });
         }
-        public void InstallJwt(IServiceCollection services, IConfiguration configuration)
+        public void MvcInstaller(IServiceCollection services, IConfiguration configuration)
         {
-
-
-            services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
+            services
+                .AddMvc(options =>
+                {
+                    options.EnableEndpointRouting = false;
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -79,6 +86,39 @@ namespace EfLearning.Api.Installers
                 options.AddPolicy(CustomRoles.Teacher, policy => policy.RequireRole(CustomRoles.Teacher));
                 options.AddPolicy(CustomRoles.Student, policy => policy.RequireRole(CustomRoles.Student));
             });
+        }
+        public void InstallSwagger(IServiceCollection services, IConfiguration configuration)
+        {
+
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new OpenApiInfo { Title = "EFFICIENT LEARNING API", Version = "v1" });
+
+                x.ExampleFilters();
+
+                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+                x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {new OpenApiSecurityScheme{Reference = new OpenApiReference
+                    {
+                        Id = "Bearer",
+                        Type = ReferenceType.SecurityScheme
+                    }}, new List<string>()}
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                x.IncludeXmlComments(xmlPath);
+            });
+
+            services.AddSwaggerExamplesFromAssemblyOf<Startup>();
+
         }
     }
 }

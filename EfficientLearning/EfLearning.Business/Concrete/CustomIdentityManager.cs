@@ -43,6 +43,7 @@ namespace EfLearning.Business.Concrete
 
         public async Task<UserResponse> CreateStudentAsync(AppUser user, string password)
         {
+                user.CreationTime = DateTime.Now;
                 var resultCreate=await _aspUserManager.CreateAsync(user, password);
                 var resultRole = await _aspUserManager.AddToRoleAsync(user,CustomRoles.Student);
                 if (resultCreate.Succeeded && resultRole.Succeeded)

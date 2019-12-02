@@ -102,10 +102,10 @@ namespace EfLearning.Api.Installers
 
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the bearer scheme",
+                    Description = "JWT Authorization header using the bearer scheme 1-Register 2-Access Token 3-Enter your token with bearer such as bearer asWsq12..",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
+                    Type = SecuritySchemeType.ApiKey,
                 });
                 x.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {

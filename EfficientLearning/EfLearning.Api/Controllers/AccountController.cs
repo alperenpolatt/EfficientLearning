@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -59,11 +60,11 @@ namespace EfLearning.Api.Controllers
             UserResponse userResponse = await _userManager.CreateStudentAsync(user,model.Password);
             if (userResponse.Success)
             {
-                return Ok(userResponse.Success);
+                return Ok(userResponse);
             }
             else
             {
-                return BadRequest(userResponse.Message);
+                return BadRequest(userResponse);
             }
             
         }
@@ -93,7 +94,7 @@ namespace EfLearning.Api.Controllers
         }
         [HttpGet]
         [Route("register-email/{userId}/{token}", Name = "ConfirmEmail")]
-        public async Task<ActionResult> ConfirmEmail([FromRoute]int userId, [FromRoute]string token)
+        private async Task<ActionResult> ConfirmEmail([FromRoute]int userId, [FromRoute]string token)
         {
             if (userId == 0 || token == null)
             {

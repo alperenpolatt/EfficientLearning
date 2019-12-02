@@ -16,13 +16,13 @@ namespace EfLearning.Api.Controllers
     public class TestController : ControllerBase
     {
         [HttpGet("OnlyStudent")]
-        [Authorize(Roles  = CustomRoles.Student)]
+        [Authorize(Policy = CustomRoles.Student)]
         public ActionResult OnlyStudent()
         {
             return Ok("Success");
         }
         [HttpGet("OnlyAdmin")]
-        [Authorize(Roles = CustomRoles.Admin)]
+        [Authorize(Policy  = CustomRoles.Admin)]
         public ActionResult OnlyAdmin()
         {
             return Ok("Success");

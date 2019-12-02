@@ -21,13 +21,13 @@ namespace EfLearning.Business.Concrete
         private UserManager<AppUser> _aspUserManager;
         private RoleManager<AppRole> _aspRoleManager;
         public readonly TokenValidationParameters _tokenValidationParameters;
-        public CustomIdentityManager( IUnitOfWork unitOfWork, UserManager<AppUser> aspUserManager, RoleManager<AppRole> aspRoleManager,  IRefreshTokenDal refreshTokenDal)
+        public CustomIdentityManager( IUnitOfWork unitOfWork, UserManager<AppUser> aspUserManager, RoleManager<AppRole> aspRoleManager,  IRefreshTokenDal refreshTokenDal, TokenValidationParameters tokenValidationParameters)
         {
             _unitOfWork = unitOfWork;
             _refreshTokenDal = refreshTokenDal;
             _aspUserManager = aspUserManager;
             _aspRoleManager = aspRoleManager;
-            _tokenValidationParameters = new TokenValidationParameters();
+            _tokenValidationParameters = tokenValidationParameters;
 
         }
 
@@ -43,7 +43,7 @@ namespace EfLearning.Business.Concrete
 
         public async Task<UserResponse> CreateStudentAsync(AppUser user, string password)
         {
-                user.CreationTime = DateTime.Now;
+                user.CreationTime = DateTime.UtcNow;
                 var resultCreate=await _aspUserManager.CreateAsync(user, password);
                 var resultRole = await _aspUserManager.AddToRoleAsync(user,CustomRoles.Student);
                 if (resultCreate.Succeeded && resultRole.Succeeded)
@@ -51,7 +51,9 @@ namespace EfLearning.Business.Concrete
                     _unitOfWork.Complete();
                     return new UserResponse(user);
                 }
-            return new UserResponse(resultCreate.Errors.ToList());
+            return new UserResponse(
+                resultCreate.Errors.FirstOrDefault().Description
+                );
         }
 
         public async Task<AuthenticationResponse> LoginAsync(string email, string password)
@@ -79,10 +81,10 @@ namespace EfLearning.Business.Concrete
             var expiryDateUnix =
                 long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 
-            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            var expiryDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(expiryDateUnix);
 
-            if (expiryDateTimeUtc > DateTime.UtcNow)
+            if (expiryDateTime > DateTime.UtcNow)
             {
                 return new AuthenticationResponse("This token hasn't expired yet");
             }
@@ -91,13 +93,11 @@ namespace EfLearning.Business.Concrete
 
 
             var storedRefreshToken = await _refreshTokenDal.SingleAsync(refreshToken);
-            
 
             if (storedRefreshToken == null)
             {
                 return new AuthenticationResponse("This refresh token does not exist");
             }
-
             if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
             {
                 return new AuthenticationResponse( "This refresh token has expired" );
@@ -129,7 +129,7 @@ namespace EfLearning.Business.Concrete
         private async Task<AuthenticationResponse> GenerateAuthenticationResultForUserAsync(AppUser user)
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings.SecurityKey));
+                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtSettings.SecurityKey));
 
                 var claims = new List<Claim>
             {
@@ -174,7 +174,7 @@ namespace EfLearning.Business.Concrete
                     JwtId = token.Id,
                     UserId = user.Id,
                     CreationTime = DateTime.UtcNow,
-                    ExpiryDate = DateTime.Now.AddMinutes(JwtSettings.RefreshTokenExpiration)
+                    ExpiryDate = DateTime.UtcNow.AddMinutes(JwtSettings.RefreshTokenExpiration)
                 };
 
                 await _refreshTokenDal.AddAsync(refreshToken);
@@ -197,10 +197,10 @@ namespace EfLearning.Business.Concrete
                 var tokenValidationParameters = _tokenValidationParameters.Clone();
                 tokenValidationParameters.ValidateLifetime = false;
                 var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
-                //if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
-                //{
-                //    return null;
-                //}
+                if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
+                {
+                    return null;
+                }
 
                 return principal;
             }

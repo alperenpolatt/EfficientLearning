@@ -25,11 +25,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <ProjectReference Include="..\EfLearning.Business\EfLearning.Business.csproj" />
     <ProjectReference Include="..\EfLearning.Data\EfLearning.Data.csproj" />
   </ItemGroup>

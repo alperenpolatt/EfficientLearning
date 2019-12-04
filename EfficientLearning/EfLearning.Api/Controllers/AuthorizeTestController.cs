@@ -16,15 +16,15 @@ namespace EfLearning.Api.Controllers
     [EnableCors]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TestController : ControllerBase
+    public class AuthorizeTestController : ControllerBase
     {
-        [HttpGet("OnlyStudent")]
+        [HttpGet("OnlyStudentCanSee")]
         [Authorize(Policy = CustomRoles.Student)]
         public ActionResult OnlyStudent()
         {
             return Ok("Success");
         }
-        [HttpGet("OnlyAdmin")]
+        [HttpGet("OnlyAdminCanSee")]
         [Authorize(Policy  = CustomRoles.Admin)]
         public ActionResult OnlyAdmin()
         {

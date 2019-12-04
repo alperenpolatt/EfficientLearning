@@ -26,6 +26,7 @@ namespace EfLearning.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors]
     public class AccountController : ControllerBase
     {
         private readonly ICustomIdentityManager _userManager;
@@ -42,7 +43,7 @@ namespace EfLearning.Api.Controllers
             _logger = logger;
         }
         [HttpGet]
-        [EnableCors]
+        
         public IEnumerable<string> Get()
         {
             

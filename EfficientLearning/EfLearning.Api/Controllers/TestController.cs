@@ -6,12 +6,14 @@ using EfLearning.Business;
 using EfLearning.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EfLearning.Api.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TestController : ControllerBase

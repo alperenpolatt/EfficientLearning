@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.EmailServices;
 using EfLearning.Api.Installers;
@@ -11,8 +8,6 @@ using EfLearning.Data.Abstract;
 using EfLearning.Data.Concrete;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -60,11 +55,8 @@ namespace EfLearning.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                SeedDatabase.Seed();
             }
-
-
-
-            app.UseStaticFiles();
 
             app.UseAuthentication();
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EfLearning.Business
+namespace EfLearning.Data
 {
     public static class CustomRoles
     {

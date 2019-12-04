@@ -1,6 +1,7 @@
 ﻿using EfLearning.Business.Abstract;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Users;
+using EfLearning.Data;
 using EfLearning.Data.Abstract;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;

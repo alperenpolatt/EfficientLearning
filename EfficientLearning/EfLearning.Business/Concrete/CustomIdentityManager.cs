@@ -42,7 +42,7 @@ namespace EfLearning.Business.Concrete
             return new BaseResponse(true, String.Empty);
         }
 
-        public async Task<UserResponse> CreateStudentAsync(AppUser user, string password)
+        public async Task<UserResponse> RegisterAsync(AppUser user, string password)
         {
                 user.CreationTime = DateTime.UtcNow;
                 var resultCreate=await _aspUserManager.CreateAsync(user, password);
@@ -135,12 +135,18 @@ namespace EfLearning.Business.Concrete
             return await GenerateAuthenticationResultForUserAsync(user);
         }
 
+        public async Task<string> GenerateEmailConfirmationTokenAsync(AppUser user)
+        {
+            if (user == null)
+                return ("User does not exist");
+            return await _aspUserManager.GenerateEmailConfirmationTokenAsync(user);
+        }
         private async Task<AuthenticationResponse> GenerateAuthenticationResultForUserAsync(AppUser user)
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtSettings.SecurityKey));
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtSettings.SecurityKey));
 
-                var claims = new List<Claim>
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -148,54 +154,54 @@ namespace EfLearning.Business.Concrete
                 new Claim("id", user.Id.ToString())
             };
 
-                var userClaims = await _aspUserManager.GetClaimsAsync(user);
-                claims.AddRange(userClaims);
+            var userClaims = await _aspUserManager.GetClaimsAsync(user);
+            claims.AddRange(userClaims);
 
-                var userRoles = await _aspUserManager.GetRolesAsync(user);
-                foreach (var userRole in userRoles)
+            var userRoles = await _aspUserManager.GetRolesAsync(user);
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+                var role = await _aspRoleManager.FindByNameAsync(userRole);
+                if (role == null) continue;
+                var roleClaims = await _aspRoleManager.GetClaimsAsync(role);
+
+                foreach (var roleClaim in roleClaims)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, userRole));
-                    var role = await _aspRoleManager.FindByNameAsync(userRole);
-                    if (role == null) continue;
-                    var roleClaims = await _aspRoleManager.GetClaimsAsync(role);
+                    if (claims.Contains(roleClaim))
+                        continue;
 
-                    foreach (var roleClaim in roleClaims)
-                    {
-                        if (claims.Contains(roleClaim))
-                            continue;
-
-                        claims.Add(roleClaim);
-                    }
+                    claims.Add(roleClaim);
                 }
-
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.Add(TimeSpan.FromMinutes(JwtSettings.AccessTokenExpiration)),
-                    SigningCredentials =
-                        new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
-                };
-
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                
-                var refreshToken = new RefreshToken
-                {
-                    JwtId = token.Id,
-                    UserId = user.Id,
-                    CreationTime = DateTime.UtcNow,
-                    ExpiryDate = DateTime.UtcNow.AddMinutes(JwtSettings.RefreshTokenExpiration)
-                };
-
-                await _refreshTokenDal.AddAsync(refreshToken);
-                await _unitOfWork.CompleteAsync();
-
-                return new AuthenticationResponse
-                {
-                    Success = true,
-                    Token = tokenHandler.WriteToken(token),
-                    RefreshToken = refreshToken.Token
-                };
             }
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.Add(TimeSpan.FromMinutes(JwtSettings.AccessTokenExpiration)),
+                SigningCredentials =
+                    new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            var refreshToken = new RefreshToken
+            {
+                JwtId = token.Id,
+                UserId = user.Id,
+                CreationTime = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddMinutes(JwtSettings.RefreshTokenExpiration)
+            };
+
+            await _refreshTokenDal.AddAsync(refreshToken);
+            await _unitOfWork.CompleteAsync();
+
+            return new AuthenticationResponse
+            {
+                Success = true,
+                Token = tokenHandler.WriteToken(token),
+                RefreshToken = refreshToken.Token
+            };
+        }
 
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
@@ -213,7 +219,7 @@ namespace EfLearning.Business.Concrete
 
                 return principal;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var a = ex;
                 return null;

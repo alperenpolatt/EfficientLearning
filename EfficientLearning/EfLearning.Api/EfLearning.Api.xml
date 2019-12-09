@@ -4,5 +4,15 @@
         <name>EfLearning.Api</name>
     </assembly>
     <members>
+        <member name="M:EfLearning.Api.Controllers.UserController.UpdateUser(EfLearning.Api.Resources.UserUpdateResource)">
+            <summary>
+            This deletes teacher and student
+            </summary>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.UserController.DeleteUser(EfLearning.Api.Resources.UserDeleteResource)">
+            <summary>
+            This deletes teacher and student
+            </summary>
+        </member>
     </members>
 </doc>

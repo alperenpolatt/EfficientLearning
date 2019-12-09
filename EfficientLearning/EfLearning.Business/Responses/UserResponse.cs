@@ -1,31 +1,22 @@
 ﻿using EfLearning.Core.Users;
-using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace EfLearning.Business.Responses
 {
     public class UserResponse : BaseResponse
     {
-        public AppUser user { get; set; }
-
-        private UserResponse(bool success, string message, AppUser user) : base(success, message)
-        {
-            this.user = user;
-        }
-
+        public AppUser User { get; set; }
         //success
 
-        public UserResponse(AppUser user) : this(true, String.Empty, user)
+        public UserResponse(AppUser user) : base(true, String.Empty)
         {
+            User = user;
         }
 
         //fail
 
-        public UserResponse(string message) : this(false, message, null)
+        public UserResponse(string message) : base(false, message)
         {
+            User = null;
         }
 
     }

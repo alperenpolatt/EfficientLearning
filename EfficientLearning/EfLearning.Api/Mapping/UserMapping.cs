@@ -11,6 +11,8 @@ namespace EfLearning.Api.Mapping
             CreateMap<UserResource, AppUser>();
             CreateMap<AppUser, UserResource>();
 
+            CreateMap<UserUpdateResource, AppUser>();
+            CreateMap<AppUser, UserUpdateResource>();
         }
     }
 }

@@ -17,8 +17,5 @@ namespace EfLearning.Api.Resources
         public string Password { get; set; }
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
-
-
-
     }
 }

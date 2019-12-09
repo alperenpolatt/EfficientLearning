@@ -63,14 +63,6 @@ namespace EfLearning.Data.Concrete
             return await _context.Set<T>().CountAsync();
         }
 
-
-        public async virtual Task<int> CommitAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
-
-
         public virtual async Task<ICollection<T>> FindByAsync(Expression<Func<T, bool>> predicate)
         {
             return await _context.Set<T>().Where(predicate).ToListAsync();

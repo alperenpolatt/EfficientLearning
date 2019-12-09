@@ -18,7 +18,6 @@ namespace EfLearning.Data.Abstract
         Task<ICollection<T>> FindByAsync(Expression<Func<T, bool>> predicate);
         Task<ICollection<T>> GetAllAsync();
         Task<T> GetAsync(int id);
-        Task<int> CommitAsync();
         Task<T> UpdateAsync(T t, object key);
     }
 }

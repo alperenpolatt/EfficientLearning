@@ -9,11 +9,10 @@ namespace EfLearning.Business.Abstract
 {
     public interface ICustomIdentityManager
     {
-        Task<UserResponse> CreateStudentAsync(AppUser user, string password);
+        Task<UserResponse> RegisterAsync(AppUser user, string password);//only student
         Task<BaseResponse> ConfirmUserAsync(int userId,string token);
-
+        Task<string> GenerateEmailConfirmationTokenAsync(AppUser user);
         Task<AuthenticationResponse> LoginAsync(string email, string password);
-
         Task<AuthenticationResponse> RefreshTokenAsync(string token, string refreshToken);
 
     }

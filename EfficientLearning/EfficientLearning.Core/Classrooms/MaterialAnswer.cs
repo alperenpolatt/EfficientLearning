@@ -9,7 +9,7 @@ namespace EfLearning.Core.Classrooms
         public string Answer { get; set; }
 
         public virtual AppUser User { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
 
         public DateTime CreationTime { get; set; }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EfLearning.Api.Resources
+namespace EfLearning.Api.Resources.User
 {
     public class UserResource
     {

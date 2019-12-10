@@ -4,12 +4,26 @@
         <name>EfLearning.Api</name>
     </assembly>
     <members>
-        <member name="M:EfLearning.Api.Controllers.UserController.UpdateUser(EfLearning.Api.Resources.UserUpdateResource)">
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassroomsByUserIdAsync(System.Int32)">
+            <summary>
+            bring classrooms which teachers have
+            </summary>
+            <param name="userId">Teacher's id</param>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassroomByIdWithStudentsAsync(System.Int32)">
+            <summary>
+            bring classrooms with students who take this classroom
+            </summary>
+            <param name="classroomId">GivenClassroomId</param>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.UserController.UpdateUser(EfLearning.Api.Resources.User.UserUpdateResource)">
             <summary>
             This deletes teacher and student
             </summary>
         </member>
-        <member name="M:EfLearning.Api.Controllers.UserController.DeleteUser(EfLearning.Api.Resources.UserDeleteResource)">
+        <member name="M:EfLearning.Api.Controllers.UserController.DeleteUser(System.Int32)">
             <summary>
             This deletes teacher and student
             </summary>

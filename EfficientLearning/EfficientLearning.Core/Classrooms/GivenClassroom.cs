@@ -2,6 +2,7 @@
 using EfLearning.Core.Users;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EfLearning.Core.Classrooms
 {
@@ -17,9 +18,8 @@ namespace EfLearning.Core.Classrooms
 
 
 
-        public int UserId { get; set; }//Teacher
-
-        public virtual AppUser AppUser { get; set; }
+        public virtual AppUser User { get; set; }
+        public int? UserId { get; set; } //Teacher
 
 
         public virtual ICollection<Material> Materials { get; set; }

@@ -10,8 +10,8 @@ namespace EfLearning.Core.Announcements
         public virtual Announcement Announcement { get; set; }
         public DateTime CreationTime { get; set; }
 
-        public int UserId { get; set; }
         public virtual AppUser User { get; set; }
+        public int? UserId { get; set; }
 
     }
 }

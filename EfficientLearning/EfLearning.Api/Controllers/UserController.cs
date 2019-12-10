@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
-using EfLearning.Api.Resources;
+using EfLearning.Api.Resources.User;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Users;
 using EfLearning.Data;
@@ -87,13 +87,13 @@ namespace EfLearning.Api.Controllers
         /// <summary>
         /// This deletes teacher and student
         /// </summary>
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser([FromBody] UserDeleteResource model)
+        [HttpDelete("{userId:int}")]
+        public async Task<IActionResult> DeleteUser([FromRoute] int userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userResponse = await _userService.DeleteUserByIdAsync(model.Id);
+            var userResponse = await _userService.DeleteUserByIdAsync(userId);
 
             if (!userResponse.Success)
                 return BadRequest(userResponse.Message);

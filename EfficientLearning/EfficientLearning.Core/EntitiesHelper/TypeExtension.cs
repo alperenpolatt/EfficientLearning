@@ -1,5 +1,7 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -7,19 +9,81 @@ namespace EfLearning.Core.EntitiesHelper
 {
     public static class TypeExtension
     {
-        public static string GetDescription(this Enum GenericEnum)
+        public static string Description(this Enum value)
         {
-            Type genericEnumType = GenericEnum.GetType();
-            MemberInfo[] memberInfo = genericEnumType.GetMember(GenericEnum.ToString());
-            if ((memberInfo != null && memberInfo.Length > 0))
+            if (value == null)
             {
-                var _Attribs = memberInfo[0].GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
-                if ((_Attribs != null && _Attribs.Count() > 0))
+                throw new ArgumentNullException("value");
+            }
+
+            string description = value.ToString();
+            FieldInfo fieldInfo = value.GetType().GetField(description);
+            DescriptionAttribute[] attributes =
+               (DescriptionAttribute[])
+             fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attributes != null && attributes.Length > 0)
+            {
+                description = attributes[0].Description;
+            }
+
+            return description;
+        }
+
+        /// <summary>
+        /// Creates an List with all keys and values of a given Enum class
+        /// </summary>
+        /// <typeparam name="T">Must be derived from class Enum!</typeparam>
+        /// <returns>A list of KeyValuePair&lt;Enum, string&gt; with all available
+        /// names and values of the given Enum.</returns>
+        public static IList<KeyValuePair<Enum, string>> ToList<T>() where T : struct
+        {
+            var type = typeof(T);
+
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException("T must be an enum");
+            }
+
+            return (IList<KeyValuePair<Enum, string>>)
+                    Enum.GetValues(type)
+                        .OfType<Enum>()
+                        .Select(e => new KeyValuePair<Enum, string>(e, e.Description()))
+                        .ToArray();
+        }
+
+        public static T GetValueFromDescription<T>(string description) where T : struct
+        {
+            var type = typeof(T);
+
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException("T must be an enum");
+            }
+
+            foreach (var field in type.GetFields())
+            {
+                var attribute = Attribute.GetCustomAttribute(field,
+                    typeof(DescriptionAttribute)) as DescriptionAttribute;
+
+                if (attribute != null)
                 {
-                    return ((System.ComponentModel.DescriptionAttribute)_Attribs.ElementAt(0)).Description;
+                    if (attribute.Description == description)
+                    {
+                        return (T)field.GetValue(null);
+                    }
+                }
+                else
+                {
+                    if (field.Name == description)
+                    {
+                        return (T)field.GetValue(null);
+                    }
                 }
             }
-            return GenericEnum.ToString();
+
+            throw new ArgumentOutOfRangeException("description");
+            // or return default(T);
         }
     }
 }

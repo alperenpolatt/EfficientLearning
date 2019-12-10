@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EfLearning.Data.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class AddCollectionToUser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -197,15 +197,14 @@ namespace EfLearning.Data.Migrations
                     ExpiryDate = table.Column<DateTime>(nullable: false),
                     Used = table.Column<bool>(nullable: false),
                     Invalidated = table.Column<bool>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    AppUserId = table.Column<int>(nullable: true)
+                    UserId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RefreshTokens", x => x.Token);
                     table.ForeignKey(
-                        name: "FK_RefreshTokens_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_RefreshTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -221,24 +220,23 @@ namespace EfLearning.Data.Migrations
                     Description = table.Column<string>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    AppUserId = table.Column<int>(nullable: true)
+                    UserId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GivenClassrooms", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GivenClassrooms_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_GivenClassrooms_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GivenClassrooms_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,7 +245,7 @@ namespace EfLearning.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: true),
                     GivenPracticeId = table.Column<int>(nullable: false),
                     Point = table.Column<int>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false)
@@ -266,7 +264,7 @@ namespace EfLearning.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -300,8 +298,8 @@ namespace EfLearning.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(nullable: false),
-                    GivenClassroomId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: true),
+                    GivenClassroomId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -312,13 +310,13 @@ namespace EfLearning.Data.Migrations
                         column: x => x.GivenClassroomId,
                         principalTable: "GivenClassrooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TakenClassrooms_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -349,7 +347,7 @@ namespace EfLearning.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Answer = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     MaterialId = table.Column<int>(nullable: false),
                     Score = table.Column<int>(nullable: false)
@@ -368,7 +366,7 @@ namespace EfLearning.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -379,7 +377,7 @@ namespace EfLearning.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AnnouncementId = table.Column<int>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -395,7 +393,7 @@ namespace EfLearning.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -465,14 +463,14 @@ namespace EfLearning.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GivenClassrooms_AppUserId",
-                table: "GivenClassrooms",
-                column: "AppUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GivenClassrooms_CourseId",
                 table: "GivenClassrooms",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GivenClassrooms_UserId",
+                table: "GivenClassrooms",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaterialAnswers_MaterialId",
@@ -490,9 +488,9 @@ namespace EfLearning.Data.Migrations
                 column: "GivenClassroomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshTokens_AppUserId",
+                name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
-                column: "AppUserId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TakenClassrooms_GivenClassroomId",
@@ -553,10 +551,10 @@ namespace EfLearning.Data.Migrations
                 name: "GivenClassrooms");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Courses");
 
             migrationBuilder.DropTable(
-                name: "Courses");
+                name: "AspNetUsers");
         }
     }
 }

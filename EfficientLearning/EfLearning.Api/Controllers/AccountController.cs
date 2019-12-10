@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
-using EfLearning.Api.EmailServices;
-using EfLearning.Api.Resources;
+using EfLearning.Api.Resources.Account;
+using EfLearning.Api.Resources.User;
 using EfLearning.Business.Abstract;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Users;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

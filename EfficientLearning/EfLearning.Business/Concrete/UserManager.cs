@@ -30,6 +30,8 @@ namespace EfLearning.Business.Concrete
         {
             user.CreationTime = DateTime.UtcNow;
             var resultCreate = await _aspUserManager.CreateAsync(user, password);
+            if (!resultCreate.Succeeded)
+                return new UserResponse(resultCreate.Errors.FirstOrDefault().Description);
 
             if (_aspRoleManager.Roles.Count() == 0)
             {
@@ -40,20 +42,19 @@ namespace EfLearning.Business.Concrete
             }
 
             var resultRole = await _aspUserManager.AddToRoleAsync(user, CustomRoles.Student);
-            if (resultCreate.Succeeded && resultRole.Succeeded)
-            {
-                _unitOfWork.Complete();
-                return new UserResponse(user);
-            }
-            return new UserResponse(
-                resultCreate.Errors.FirstOrDefault().Description
-                );
+            if (!resultRole.Succeeded)
+                return new UserResponse(resultRole.Errors.FirstOrDefault().Description);
+
+            await _unitOfWork.CompleteAsync();
+            return new UserResponse(user);
         }
 
         public async Task<UserResponse> CreateTeacherAsync(AppUser user, string password)
         {
             user.CreationTime = DateTime.UtcNow;
             var resultCreate = await _aspUserManager.CreateAsync(user, password);
+            if (!resultCreate.Succeeded)
+                return new UserResponse(resultCreate.Errors.FirstOrDefault().Description);
 
             if (_aspRoleManager.Roles.Count() == 0)
             {
@@ -64,14 +65,11 @@ namespace EfLearning.Business.Concrete
             }
 
             var resultRole = await _aspUserManager.AddToRoleAsync(user, CustomRoles.Teacher);
-            if (resultCreate.Succeeded && resultRole.Succeeded)
-            {
-                _unitOfWork.Complete();
-                return new UserResponse(user);
-            }
-            return new UserResponse(
-                resultCreate.Errors.FirstOrDefault().Description
-                );
+            if (!resultRole.Succeeded)
+                return new UserResponse(resultRole.Errors.FirstOrDefault().Description);
+
+            await _unitOfWork.CompleteAsync();
+            return new UserResponse(user);
         }
 
         public async Task<UserResponse> DeleteUserByIdAsync(int userId)

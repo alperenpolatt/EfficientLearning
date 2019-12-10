@@ -22,9 +22,8 @@ namespace EfLearning.Core.Users
 
         public bool Invalidated { get; set; }
 
-        public int UserId { get; set; }
+        public virtual AppUser User { get; set; }
+        public int? UserId { get; set; }
 
-        public virtual AppUser AppUser { get; set; }
-        
     }
 }

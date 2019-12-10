@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EfLearning.Api.Resources;
+using EfLearning.Api.Resources.User;
 using EfLearning.Core.Users;
 
 namespace EfLearning.Api.Mapping

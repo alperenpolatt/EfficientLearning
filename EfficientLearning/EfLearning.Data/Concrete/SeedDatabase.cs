@@ -1,5 +1,7 @@
-﻿using EfLearning.Core.Users;
+﻿using EfLearning.Core.Classrooms;
+using EfLearning.Core.Users;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace EfLearning.Data.Concrete
@@ -26,6 +28,5 @@ namespace EfLearning.Data.Concrete
             new AppRole(){ Name=CustomRoles.Student}
         };
 
-     
     }
 }

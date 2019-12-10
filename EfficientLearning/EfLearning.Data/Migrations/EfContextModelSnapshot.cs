@@ -50,7 +50,7 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<DateTime>("CreationTime");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
@@ -83,8 +83,6 @@ namespace EfLearning.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AppUserId");
-
                     b.Property<int>("CourseId");
 
                     b.Property<DateTime>("CreationTime");
@@ -93,13 +91,13 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("GivenClassrooms");
                 });
@@ -145,7 +143,7 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<int>("Score");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
@@ -164,9 +162,9 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<DateTime>("CreationTime");
 
-                    b.Property<int>("GivenClassroomId");
+                    b.Property<int?>("GivenClassroomId");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
@@ -189,7 +187,7 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<int>("Point");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
@@ -305,8 +303,6 @@ namespace EfLearning.Data.Migrations
                     b.Property<string>("Token")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("AppUserId");
-
                     b.Property<DateTime>("CreationTime");
 
                     b.Property<DateTime>("ExpiryDate");
@@ -317,11 +313,11 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<bool>("Used");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Token");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
                 });
@@ -424,21 +420,20 @@ namespace EfLearning.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EfLearning.Core.Classrooms.GivenClassroom", b =>
                 {
-                    b.HasOne("EfLearning.Core.Users.AppUser", "AppUser")
-                        .WithMany("GivenClassrooms")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("EfLearning.Core.Classrooms.Course", "Course")
                         .WithMany("GivenClassrooms")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EfLearning.Core.Users.AppUser", "User")
+                        .WithMany("GivenClassrooms")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EfLearning.Core.Classrooms.Material", b =>
@@ -457,22 +452,19 @@ namespace EfLearning.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("MaterialAnswers")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EfLearning.Core.Classrooms.TakenClassroom", b =>
                 {
                     b.HasOne("EfLearning.Core.Classrooms.GivenClassroom", "GivenClassroom")
                         .WithMany("TakenClassrooms")
-                        .HasForeignKey("GivenClassroomId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("GivenClassroomId");
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
                         .WithMany("TakenClassrooms")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EfLearning.Core.Practices.DonePractice", b =>
@@ -484,15 +476,14 @@ namespace EfLearning.Data.Migrations
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
                         .WithMany("DonePractices")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EfLearning.Core.Users.RefreshToken", b =>
                 {
-                    b.HasOne("EfLearning.Core.Users.AppUser", "AppUser")
+                    b.HasOne("EfLearning.Core.Users.AppUser", "User")
                         .WithMany("RefreshTokens")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

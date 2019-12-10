@@ -19,4 +19,8 @@
     <ProjectReference Include="..\EfficientLearning.Core\EfLearning.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

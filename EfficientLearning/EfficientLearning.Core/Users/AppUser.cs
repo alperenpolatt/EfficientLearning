@@ -1,4 +1,5 @@
-﻿using EfLearning.Core.Classrooms;
+﻿using EfLearning.Core.Announcements;
+using EfLearning.Core.Classrooms;
 using EfLearning.Core.EntitiesHelper;
 using EfLearning.Core.Practices;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +18,7 @@ namespace EfLearning.Core.Users
         public virtual ICollection<GivenClassroom> GivenClassrooms { get; set; }
         public virtual ICollection<DonePractice> DonePractices { get; set; }
         public virtual ICollection<RefreshToken> RefreshTokens{ get; set; }
-
+        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<MaterialAnswer> MaterialAnswers { get; set; }
     }
 }

@@ -46,7 +46,9 @@ namespace EfLearning.Business.Concrete
         {
                 user.CreationTime = DateTime.UtcNow;
                 var resultCreate=await _aspUserManager.CreateAsync(user, password);
-                
+            if (!resultCreate.Succeeded)
+                return new UserResponse(resultCreate.Errors.FirstOrDefault().Description);
+
                 if (_aspRoleManager.Roles.Count() == 0) {
                     await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Admin });
                     await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Teacher });
@@ -55,14 +57,11 @@ namespace EfLearning.Business.Concrete
                 }
                 
                 var resultRole = await _aspUserManager.AddToRoleAsync(user,CustomRoles.Student);
-                if (resultCreate.Succeeded && resultRole.Succeeded)
-                {
-                    _unitOfWork.Complete();
-                    return new UserResponse(user);
-                }
-            return new UserResponse(
-                resultCreate.Errors.FirstOrDefault().Description
-                );
+                if (!resultRole.Succeeded)
+                        return new UserResponse(resultRole.Errors.FirstOrDefault().Description);
+
+                await _unitOfWork.CompleteAsync();
+                return new UserResponse(user);
         }
 
         public async Task<AuthenticationResponse> LoginAsync(string email, string password)

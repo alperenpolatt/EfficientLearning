@@ -35,8 +35,15 @@ namespace EfLearning.Api
             services.AddScoped<IRefreshTokenDal, RefreshTokenDal>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICustomIdentityManager, CustomIdentityManager>();
+
             services.AddScoped<IUserService, UserManager>();
             services.AddScoped<IUserDal, UserDal>();
+
+            services.AddScoped<IGivenClassroomService, GivenClassroomManager>();
+            services.AddScoped<IGivenClassroomDal, GivenClassroomDal>();
+
+            services.AddScoped<ICourseService, CourseManager>();
+            services.AddScoped<ICourseDal, CourseDal>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddTransient<IEmailSender, EmailSender>();

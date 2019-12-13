@@ -4,14 +4,14 @@
         <name>EfLearning.Api</name>
     </assembly>
     <members>
-        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassroomsByUserIdAsync(System.Int32)">
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassroomsByUserId(System.Int32)">
             <summary>
             bring classrooms which teachers have
             </summary>
             <param name="userId">Teacher's id</param>
             <returns></returns>
         </member>
-        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassroomByIdWithStudentsAsync(System.Int32)">
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetStudentsByClassroomId(System.Int32)">
             <summary>
             bring classrooms with students who take this classroom
             </summary>
@@ -26,6 +26,11 @@
         <member name="M:EfLearning.Api.Controllers.UserController.DeleteUser(System.Int32)">
             <summary>
             This deletes teacher and student
+            </summary>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.UserController.GetRegisteredStudentsByMonth(System.Int32)">
+            <summary>
+            Bring students who registered the system in terms of last month which is parameter
             </summary>
         </member>
     </members>

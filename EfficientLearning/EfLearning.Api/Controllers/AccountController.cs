@@ -24,7 +24,6 @@ namespace EfLearning.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        
         public IEnumerable<string> Get()
         {
             
@@ -84,7 +83,7 @@ namespace EfLearning.Api.Controllers
             return Ok(result);
             
         }
-       
+        
       
     }
 }

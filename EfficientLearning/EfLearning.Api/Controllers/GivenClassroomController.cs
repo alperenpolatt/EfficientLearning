@@ -1,20 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using EfLearning.Api.Resources;
 using EfLearning.Api.Resources.Classroom;
-using EfLearning.Api.Resources.User;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
-using EfLearning.Core.Users;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace EfLearning.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [EnableCors]
     public class GivenClassroomController : ControllerBase
     {
         private readonly IGivenClassroomService _givenClassroomService;
@@ -37,8 +34,8 @@ namespace EfLearning.Api.Controllers
         /// </summary>
         /// <param name="userId">Teacher's id</param>
         /// <returns></returns>
-        [HttpPost("{userId:int}")]
-        public async Task<IActionResult> GetClassroomsByUserIdAsync([FromRoute]int userId)
+        [HttpGet("{userId:int}")]
+        public async Task<IActionResult> GetClassroomsByUserId([FromRoute]int userId)
         {
             var givenClassroomListResponse = await _givenClassroomService.GetByUserIdAsync(userId);
             if (!givenClassroomListResponse.Success)
@@ -52,18 +49,20 @@ namespace EfLearning.Api.Controllers
         /// </summary>
         /// <param name="classroomId">GivenClassroomId</param>
         /// <returns></returns>
-        [HttpPost("{classroomId:int}")]
-        public async Task<IActionResult> GetClassroomByIdWithStudentsAsync([FromRoute]int classroomId)
+        [HttpGet("{classroomId:int}")]
+        public async Task<IActionResult> GetStudentsByClassroomId([FromRoute]int classroomId)
         {
             var givenClassroomResponse = await _givenClassroomService.GetByIdAsync(classroomId);
             if (!givenClassroomResponse.Success)
             {
                 return BadRequest(givenClassroomResponse.Message);
             }
-
-            var students = givenClassroomResponse.Extra.TakenClassrooms.Select(u=>new  { Id=u.User.Id,UserName=u.User.UserName,Surname=u.User.Surname});
-
-
+            var students = givenClassroomResponse.Extra.TakenClassrooms.Select(u=>new  { 
+                Id=u.User.Id,
+                Name=u.User.Name,
+                Surname = u.User.Surname,
+                UserName = u.User.UserName
+            });
 
             return Ok(students);
         }

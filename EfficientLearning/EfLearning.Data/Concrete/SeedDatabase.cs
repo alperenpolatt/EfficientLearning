@@ -8,7 +8,7 @@ namespace EfLearning.Data.Concrete
 {
     public class SeedDatabase
     {
-        public static void Seed()
+        public static async void Seed()
         {
             var context = new EfContext();
 
@@ -18,14 +18,14 @@ namespace EfLearning.Data.Concrete
                 {
                     context.Roles.AddRange(Roles);
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
         private static AppRole[] Roles = {
-            new AppRole(){ Name=CustomRoles.Admin},
-            new AppRole(){ Name=CustomRoles.Teacher},
-            new AppRole(){ Name=CustomRoles.Student}
+            new AppRole(){ Name=CustomRoles.Admin,NormalizedName=CustomRoles.Admin.ToUpperInvariant()},
+            new AppRole(){ Name=CustomRoles.Teacher,NormalizedName=CustomRoles.Teacher.ToUpperInvariant()},
+            new AppRole(){ Name=CustomRoles.Student,NormalizedName=CustomRoles.Student.ToUpperInvariant()}
         };
 
     }

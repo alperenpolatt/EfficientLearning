@@ -4,9 +4,11 @@ using EfLearning.Core.Classrooms;
 using EfLearning.Data.Abstract;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 namespace EfLearning.Business.Concrete
 {
     public class CourseManager:ICourseService
@@ -60,6 +62,29 @@ namespace EfLearning.Business.Concrete
             {
 
                 return new BasexResponse<ICollection<Course>>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<ICollection<CoursePopularityResponse>>> GetPopularityofProgrammingTypesAsync()
+        {
+            try
+            {
+                var response = new Collection<CoursePopularityResponse>();
+                var groupCourses =await _courseDal.GetCoursesGroupByProgrammingType();
+                foreach (var item in groupCourses)
+                {
+                    response.Add(new CoursePopularityResponse
+                    {
+                        ProgrammingType= item.Key,
+                        Count=item.Count()
+                    });
+                }
+                return new BasexResponse<ICollection<CoursePopularityResponse>>(response);
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<ICollection<CoursePopularityResponse>>(ex.Message);
             }
         }
 

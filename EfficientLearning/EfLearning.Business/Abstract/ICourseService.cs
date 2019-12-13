@@ -9,6 +9,8 @@ namespace EfLearning.Business.Abstract
 {
     public interface ICourseService
     {
+
+        Task<BasexResponse<ICollection<CoursePopularityResponse>>> GetPopularityofProgrammingTypesAsync();
         Task<BasexResponse<ICollection<Course>>> GetAllAsync();
         Task<BasexResponse<Course>> CreateAsync(Course course);
         Task<BasexResponse<Course>> UpdateAsync(Course course);

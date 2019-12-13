@@ -4,10 +4,12 @@ using EfLearning.Core.Users;
 using EfLearning.Data;
 using EfLearning.Data.Abstract;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EfLearning.Business.Concrete
@@ -26,57 +28,43 @@ namespace EfLearning.Business.Concrete
             _userDal = userDal;
         }
 
-        public async Task<UserResponse> CreateStudentAsync(AppUser user,string password)
+        public async Task<BasexResponse<AppUser>> CreateStudentAsync(AppUser user,string password)
         {
             user.CreationTime = DateTime.UtcNow;
             var resultCreate = await _aspUserManager.CreateAsync(user, password);
             if (!resultCreate.Succeeded)
-                return new UserResponse(resultCreate.Errors.FirstOrDefault().Description);
+                return new BasexResponse<AppUser>(resultCreate.Errors.FirstOrDefault().Description);
 
-            if (_aspRoleManager.Roles.Count() == 0)
-            {
-                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Admin });
-                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Teacher });
-                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Student });
-                await _unitOfWork.CompleteAsync();
-            }
 
             var resultRole = await _aspUserManager.AddToRoleAsync(user, CustomRoles.Student);
             if (!resultRole.Succeeded)
-                return new UserResponse(resultRole.Errors.FirstOrDefault().Description);
+                return new BasexResponse<AppUser>(resultRole.Errors.FirstOrDefault().Description);
 
             await _unitOfWork.CompleteAsync();
-            return new UserResponse(user);
+            return new BasexResponse<AppUser>(user);
         }
 
-        public async Task<UserResponse> CreateTeacherAsync(AppUser user, string password)
+        public async Task<BasexResponse<AppUser>> CreateTeacherAsync(AppUser user, string password)
         {
             user.CreationTime = DateTime.UtcNow;
             var resultCreate = await _aspUserManager.CreateAsync(user, password);
             if (!resultCreate.Succeeded)
-                return new UserResponse(resultCreate.Errors.FirstOrDefault().Description);
+                return new BasexResponse<AppUser>(resultCreate.Errors.FirstOrDefault().Description);
 
-            if (_aspRoleManager.Roles.Count() == 0)
-            {
-                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Admin });
-                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Teacher });
-                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Student });
-                await _unitOfWork.CompleteAsync();
-            }
 
             var resultRole = await _aspUserManager.AddToRoleAsync(user, CustomRoles.Teacher);
             if (!resultRole.Succeeded)
-                return new UserResponse(resultRole.Errors.FirstOrDefault().Description);
+                return new BasexResponse<AppUser>(resultRole.Errors.FirstOrDefault().Description);
 
             await _unitOfWork.CompleteAsync();
-            return new UserResponse(user);
+            return new BasexResponse<AppUser>(user);
         }
 
-        public async Task<UserResponse> DeleteUserByIdAsync(int userId)
+        public async Task<BasexResponse<AppUser>> DeleteUserByIdAsync(int userId)
         {
             if (!_aspUserManager.Users.Any(u=>u.Id==userId))
             {
-                return new UserResponse("There is no this id");
+                return new BasexResponse<AppUser>("There is no this id");
             }
             var resultUser = await _aspUserManager.FindByIdAsync(userId.ToString());
             
@@ -84,29 +72,70 @@ namespace EfLearning.Business.Concrete
             if (resultDelete.Succeeded)
             {
                 await _unitOfWork.CompleteAsync();
-                return new UserResponse(resultUser);
+                return new BasexResponse<AppUser>(resultUser);
             }
-            return new UserResponse(resultDelete.Errors.FirstOrDefault().Description);
+            return new BasexResponse<AppUser>(resultDelete.Errors.FirstOrDefault().Description);
 
         }
 
-        public async Task<UserListResponse> GetUsersByRoleAsync(string roleName)
+        public async Task<BasexResponse<ICollection<UserCountByMonthResponse>>> GetRegisteredUsersByMonthAsync(int month,string roleName)
+        {
+            var response=new Collection<UserCountByMonthResponse>();
+            var lastXMonth = DateTime.UtcNow.AddMonths(-month);
+            var users = await _aspUserManager.GetUsersInRoleAsync(roleName);
+            var lastXMonthUsers = users.Where(u => u.CreationTime > lastXMonth);
+            var groupedUsers = lastXMonthUsers.GroupBy(u => u.CreationTime.Month);
+            foreach (var item in groupedUsers)
+            {
+                response.Add(new UserCountByMonthResponse
+                {
+                    UserCount=item.Count(),
+                    MonthName= CultureInfo.InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName(item.Key)
+                });
+            }
+
+          
+
+            return new BasexResponse<ICollection<UserCountByMonthResponse>>(response);
+        }
+
+        public async Task<BasexResponse<SimpleUserResponse>> GetUserByEmailWithRoleAsync(string email)
+        {
+            var user = await _aspUserManager.FindByEmailAsync(email);
+            if (user == null)
+                return new BasexResponse<SimpleUserResponse>("There is no user with this email ");
+            var role = await _aspUserManager.GetRolesAsync(user);
+            
+
+            return new BasexResponse<SimpleUserResponse>(new SimpleUserResponse { 
+                Id=user.Id,
+                Name=user.Name,
+                Surname=user.Surname,
+                UserName=user.UserName,
+                RoleName=role.FirstOrDefault(),
+                Email=user.Email,
+                EmailConfirmed=user.EmailConfirmed,
+                CreationTime=user.CreationTime
+            });
+        }
+
+        public async Task<BasexResponse<ICollection<AppUser>>> GetUsersByRoleAsync(string roleName)
         {
             if (String.IsNullOrEmpty(roleName))
-                return new UserListResponse("Role can not be null");
+                return new BasexResponse<ICollection<AppUser>>("Role can not be null");
             if (!_aspRoleManager.Roles.Any(r=>r.Name== roleName))
-                return new UserListResponse("There is no this role");
+                return new BasexResponse<ICollection<AppUser>>("There is no this role");
 
             var users=await _aspUserManager.GetUsersInRoleAsync(roleName);
             if (users.Count==0)
             {
-                return new UserListResponse("There is no user in this role");
+                return new BasexResponse<ICollection<AppUser>>("There is no user in this role");
             }
-            return new UserListResponse(users);
+            return new BasexResponse<ICollection<AppUser>>(users);
             
         }
 
-        public async Task<UserResponse> UpdateUserAsync(AppUser user)
+        public async Task<BasexResponse<AppUser>> UpdateUserAsync(AppUser user)
         {
             var resultUser = await _aspUserManager.FindByIdAsync(user.Id.ToString());
             resultUser.Name = user.Name;
@@ -116,11 +145,23 @@ namespace EfLearning.Business.Concrete
             if (resultUpdate.Succeeded)
             {
                 await _unitOfWork.CompleteAsync();
-                return new UserResponse(user);
+                return new BasexResponse<AppUser>(user);
             }
-            return new UserResponse(resultUpdate.Errors.FirstOrDefault().Description);
-
-
+            return new BasexResponse<AppUser>(resultUpdate.Errors.FirstOrDefault().Description);
         }
+
+
+        private async Task CheckThereIsRoles()
+        {
+            if (await _aspRoleManager.Roles.CountAsync() == 0)
+            {
+                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Admin });
+                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Teacher });
+                await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Student });
+                await _unitOfWork.CompleteAsync();
+            }
+        }
+
+       
     }
 }

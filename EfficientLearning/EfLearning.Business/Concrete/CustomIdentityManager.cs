@@ -44,19 +44,13 @@ namespace EfLearning.Business.Concrete
 
         public async Task<UserResponse> RegisterAsync(AppUser user, string password)
         {
+          
                 user.CreationTime = DateTime.UtcNow;
                 var resultCreate=await _aspUserManager.CreateAsync(user, password);
             if (!resultCreate.Succeeded)
                 return new UserResponse(resultCreate.Errors.FirstOrDefault().Description);
 
-                if (_aspRoleManager.Roles.Count() == 0) {
-                    await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Admin });
-                    await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Teacher });
-                    await _aspRoleManager.CreateAsync(new AppRole { Name = CustomRoles.Student });
-                    await _unitOfWork.CompleteAsync();
-                }
-                
-                var resultRole = await _aspUserManager.AddToRoleAsync(user,CustomRoles.Student);
+            var resultRole = await _aspUserManager.AddToRoleAsync(user,CustomRoles.Student);
                 if (!resultRole.Succeeded)
                         return new UserResponse(resultRole.Errors.FirstOrDefault().Description);
 

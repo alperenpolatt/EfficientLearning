@@ -1,18 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Course;
-using EfLearning.Api.Resources.User;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
 using EfLearning.Core.EntitiesHelper;
-using EfLearning.Core.Users;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 namespace EfLearning.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [EnableCors]
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
@@ -79,6 +78,17 @@ namespace EfLearning.Api.Controllers
                 return BadRequest(courseResponse.Message);
 
             return Ok(courseResponse.Extra);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPopularityofProgrammingLanguages()
+        {
+            var courseList = await _courseService.GetPopularityofProgrammingTypesAsync();
+            if (!courseList.Success)
+                return BadRequest(courseList.Message);
+            return Ok(courseList.Extra.Select(c => new {
+                ProgrammingLanguage= c.ProgrammingType.ToString(),
+                Count = c.Count
+            }));
         }
     }
 }

@@ -10,10 +10,12 @@ namespace EfLearning.Business.Abstract
 {
     public interface IUserService
     {
-        Task<UserListResponse> GetUsersByRoleAsync(string roleName);
-        Task<UserResponse> CreateStudentAsync(AppUser user,string password);
-        Task<UserResponse> CreateTeacherAsync(AppUser user,string password);
-        Task<UserResponse> UpdateUserAsync(AppUser user);
-        Task<UserResponse> DeleteUserByIdAsync(int userId);
+        Task<BasexResponse<ICollection<UserCountByMonthResponse>>> GetRegisteredUsersByMonthAsync(int month,string roleName);
+        Task<BasexResponse<ICollection<AppUser>>> GetUsersByRoleAsync(string roleName);
+        Task<BasexResponse<SimpleUserResponse>> GetUserByEmailWithRoleAsync(string email);
+        Task<BasexResponse<AppUser>> CreateStudentAsync(AppUser user,string password);
+        Task<BasexResponse<AppUser>> CreateTeacherAsync(AppUser user,string password);
+        Task<BasexResponse<AppUser>> UpdateUserAsync(AppUser user);
+        Task<BasexResponse<AppUser>> DeleteUserByIdAsync(int userId);
     }
 }

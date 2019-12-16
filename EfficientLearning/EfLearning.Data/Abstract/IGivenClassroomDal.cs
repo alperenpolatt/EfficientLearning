@@ -9,5 +9,6 @@ namespace EfLearning.Data.Abstract
     public interface IGivenClassroomDal : IRepository<GivenClassroom>
     {
         Task<GivenClassroom> GetByIdWithTakenClasroomsAndStudentsAsync(int id);
+        Task<ICollection<GivenClassroom>> GetBySearchTermAsync(string query);
     }
 }

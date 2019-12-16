@@ -11,6 +11,7 @@ namespace EfLearning.Business.Abstract
     {
         Task<BasexResponse<ICollection<GivenClassroom>>> GetAllAsync();
         Task<BasexResponse<ICollection<GivenClassroom>>> GetByUserIdAsync(int userId);
+        Task<BasexResponse<ICollection<GivenClassroom>>> GetBySearchTermAsync(string query);
         Task<BasexResponse<GivenClassroom>> GetByIdAsync(int id);
         Task<BasexResponse<GivenClassroom>> CreateAsync(GivenClassroom givenClassroom);
         Task<BasexResponse<GivenClassroom>> UpdateAsync(GivenClassroom givenClassroom);

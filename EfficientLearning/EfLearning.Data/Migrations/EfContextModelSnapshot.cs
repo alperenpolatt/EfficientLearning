@@ -50,6 +50,8 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<DateTime>("CreationTime");
 
+                    b.Property<string>("Description");
+
                     b.Property<int?>("UserId");
 
                     b.HasKey("Id");
@@ -116,7 +118,7 @@ namespace EfLearning.Data.Migrations
 
                     b.Property<string>("Hint");
 
-                    b.Property<int>("MaterialScale");
+                    b.Property<int?>("MaterialScale");
 
                     b.Property<int>("MaterialType");
 
@@ -131,46 +133,34 @@ namespace EfLearning.Data.Migrations
 
             modelBuilder.Entity("EfLearning.Core.Classrooms.MaterialAnswer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("MaterialId");
 
                     b.Property<string>("Answer");
 
                     b.Property<DateTime>("CreationTime");
 
-                    b.Property<int>("MaterialId");
-
                     b.Property<int>("Score");
 
-                    b.Property<int?>("UserId");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "MaterialId");
 
                     b.HasIndex("MaterialId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("MaterialAnswers");
                 });
 
             modelBuilder.Entity("EfLearning.Core.Classrooms.TakenClassroom", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("GivenClassroomId");
 
                     b.Property<DateTime>("CreationTime");
 
-                    b.Property<int?>("GivenClassroomId");
-
-                    b.Property<int?>("UserId");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "GivenClassroomId");
 
                     b.HasIndex("GivenClassroomId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("TakenClassrooms");
                 });
@@ -447,24 +437,27 @@ namespace EfLearning.Data.Migrations
             modelBuilder.Entity("EfLearning.Core.Classrooms.MaterialAnswer", b =>
                 {
                     b.HasOne("EfLearning.Core.Classrooms.Material", "Material")
-                        .WithMany()
+                        .WithMany("MaterialAnswers")
                         .HasForeignKey("MaterialId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
                         .WithMany("MaterialAnswers")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EfLearning.Core.Classrooms.TakenClassroom", b =>
                 {
                     b.HasOne("EfLearning.Core.Classrooms.GivenClassroom", "GivenClassroom")
                         .WithMany("TakenClassrooms")
-                        .HasForeignKey("GivenClassroomId");
+                        .HasForeignKey("GivenClassroomId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
                         .WithMany("TakenClassrooms")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EfLearning.Core.Practices.DonePractice", b =>

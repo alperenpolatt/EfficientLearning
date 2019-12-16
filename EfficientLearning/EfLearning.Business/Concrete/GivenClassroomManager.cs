@@ -4,7 +4,6 @@ using EfLearning.Core.Classrooms;
 using EfLearning.Data.Abstract;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EfLearning.Business.Concrete
@@ -78,6 +77,20 @@ namespace EfLearning.Business.Concrete
             }
         }
 
+        public async Task<BasexResponse<ICollection<GivenClassroom>>> GetBySearchTermAsync(string query)
+        {
+            try
+            {
+                var givenClassrooms = await _givenClassroomDal.GetBySearchTermAsync(query);
+                return new BasexResponse<ICollection<GivenClassroom>>(givenClassrooms);
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<ICollection<GivenClassroom>>(ex.Message);
+            }
+        }
+
         public async Task<BasexResponse<ICollection<GivenClassroom>>> GetByUserIdAsync(int userId)
         {
             try
@@ -96,13 +109,16 @@ namespace EfLearning.Business.Concrete
         {
             try
             {
-                var updatedClassroom = await _givenClassroomDal.UpdateAsync(givenClassroom, givenClassroom.Id);
+                var resultGivenClassroom = await _givenClassroomDal.GetAsync(givenClassroom.Id);
+                resultGivenClassroom.CourseId = givenClassroom.CourseId;
+                resultGivenClassroom.Description = givenClassroom.Description;
+
+                var updatedClassroom = await _givenClassroomDal.UpdateAsync(resultGivenClassroom, resultGivenClassroom.Id);
                 await _unitOfWork.CompleteAsync();
                 return new BasexResponse<GivenClassroom>(updatedClassroom);
             }
             catch (Exception ex)
             {
-
                 return new BasexResponse<GivenClassroom>(ex.Message);
             }
         }

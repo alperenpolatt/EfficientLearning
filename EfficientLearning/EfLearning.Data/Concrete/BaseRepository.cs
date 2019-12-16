@@ -58,6 +58,7 @@ namespace EfLearning.Data.Concrete
             }
             return exist;
         }
+      
         public async Task<int> CountAsync()
         {
             return await _context.Set<T>().CountAsync();

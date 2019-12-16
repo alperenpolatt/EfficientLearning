@@ -35,7 +35,7 @@ namespace EfLearning.Api.Controllers
         /// <param name="userId">Teacher's id</param>
         /// <returns></returns>
         [HttpGet("{userId:int}")]
-        public async Task<IActionResult> GetClassroomsByUserId([FromRoute]int userId)
+        public async Task<IActionResult> GetClassrooms([FromRoute]int userId)
         {
             var givenClassroomListResponse = await _givenClassroomService.GetByUserIdAsync(userId);
             if (!givenClassroomListResponse.Success)
@@ -47,12 +47,12 @@ namespace EfLearning.Api.Controllers
         /// <summary>
         /// bring classrooms with students who take this classroom
         /// </summary>
-        /// <param name="classroomId">GivenClassroomId</param>
+        /// <param name="givenClassroomId">GivenClassroomId</param>
         /// <returns></returns>
         [HttpGet("{classroomId:int}")]
-        public async Task<IActionResult> GetStudentsByClassroomId([FromRoute]int classroomId)
+        public async Task<IActionResult> GetStudents([FromRoute]int givenClassroomId)
         {
-            var givenClassroomResponse = await _givenClassroomService.GetByIdAsync(classroomId);
+            var givenClassroomResponse = await _givenClassroomService.GetByIdAsync(givenClassroomId);
             if (!givenClassroomResponse.Success)
             {
                 return BadRequest(givenClassroomResponse.Message);
@@ -66,7 +66,16 @@ namespace EfLearning.Api.Controllers
 
             return Ok(students);
         }
-
+        [HttpGet("{searchTerm}")]
+        public async Task<IActionResult> FindAClassroom([FromRoute]string searchTerm)
+        {
+            var givenClassroomResponse = await _givenClassroomService.GetBySearchTermAsync(searchTerm);
+            if (!givenClassroomResponse.Success)
+            {
+                return BadRequest(givenClassroomResponse.Message);
+            }
+            return Ok(givenClassroomResponse);
+        }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]GivenClassroomResource model)
         {

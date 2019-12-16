@@ -1,4 +1,5 @@
-﻿using EfLearning.Core.EntitiesHelper;
+﻿using EfLearning.Core.Announcements;
+using EfLearning.Core.EntitiesHelper;
 using EfLearning.Core.Users;
 using System;
 using System.Collections.Generic;

@@ -36,7 +36,7 @@ namespace EfLearning.Api.Controllers
                 return BadRequest(ModelState);
 
             AppUser user = _mapper.Map<UserResource, AppUser>(model);
-            UserResponse userResponse = await _userManager.RegisterAsync(user,model.Password);
+            var userResponse = await _userManager.RegisterAsync(user,model.Password);
 
             if (!userResponse.Success)
                 return BadRequest(userResponse.Message);

@@ -1,4 +1,5 @@
-﻿using EfLearning.Business.Abstract;
+﻿using AutoMapper;
+using EfLearning.Business.Abstract;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Users;
 using EfLearning.Data;
@@ -20,12 +21,14 @@ namespace EfLearning.Business.Concrete
         private UserManager<AppUser> _aspUserManager;
         private RoleManager<AppRole> _aspRoleManager;
         private IUserDal _userDal;
-        public UserManager(IUnitOfWork unitOfWork, UserManager<AppUser> aspUserManager, RoleManager<AppRole> aspRoleManager,IUserDal userDal)
+        private readonly IMapper _mapper;
+        public UserManager(IUnitOfWork unitOfWork, UserManager<AppUser> aspUserManager, RoleManager<AppRole> aspRoleManager,IUserDal userDal,IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _aspUserManager = aspUserManager;
             _aspRoleManager = aspRoleManager;
             _userDal = userDal;
+            _mapper = mapper;
         }
 
         public async Task<BasexResponse<AppUser>> CreateStudentAsync(AppUser user,string password)
@@ -105,18 +108,11 @@ namespace EfLearning.Business.Concrete
             if (user == null)
                 return new BasexResponse<SimpleUserResponse>("There is no user with this email ");
             var role = await _aspUserManager.GetRolesAsync(user);
-            
 
-            return new BasexResponse<SimpleUserResponse>(new SimpleUserResponse { 
-                Id=user.Id,
-                Name=user.Name,
-                Surname=user.Surname,
-                UserName=user.UserName,
-                RoleName=role.FirstOrDefault(),
-                Email=user.Email,
-                EmailConfirmed=user.EmailConfirmed,
-                CreationTime=user.CreationTime
-            });
+            var simpleUser = _mapper.Map<AppUser, SimpleUserResponse>(user);
+            simpleUser.RoleName = role.FirstOrDefault();
+            return new BasexResponse<SimpleUserResponse>(simpleUser);
+            
         }
 
         public async Task<BasexResponse<ICollection<AppUser>>> GetUsersByRoleAsync(string roleName)

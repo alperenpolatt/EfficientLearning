@@ -4,9 +4,11 @@ namespace EfLearning.Core.Classrooms
 {
     public enum MaterialType
     {
-        [Description("Description")]
+        [Description("Question")]
         Question = 0,
-        [Description("Description")]
-        Task = 1
+        [Description("Task")]
+        Task = 1,
+        [Description("Announcement")]
+        Announcement = 2
     }
 }

@@ -17,10 +17,17 @@ namespace EfLearning.Data.Concrete
         public async Task<GivenClassroom> GetByIdWithTakenClasroomsAndStudentsAsync(int id)
         {
             return await _context.GivenClassrooms
-                            .Where(gc => gc.Id==id)
-                            .Include(gc=>gc.TakenClassrooms)
+                            .Where(gc => gc.Id == id)
+                            .Include(gc => gc.TakenClassrooms)
                             .ThenInclude(tc => tc.User)
                             .FirstOrDefaultAsync();
+        }
+
+        public async Task<ICollection<GivenClassroom>> GetBySearchTermAsync(string query)
+        {
+            return await _context.GivenClassrooms
+                            .Where(gc => gc.Course.Name.Contains(query) || gc.Description.Contains(query))
+                            .ToListAsync();
         }
     }
 }

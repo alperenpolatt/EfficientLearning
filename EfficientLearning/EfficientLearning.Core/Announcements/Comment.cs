@@ -6,6 +6,7 @@ namespace EfLearning.Core.Announcements
 {
     public class Comment : RootEntity<int>, ICreationTime
     {
+        public string Description { get; set; }
         public int AnnouncementId { get; set; }
         public virtual Announcement Announcement { get; set; }
         public DateTime CreationTime { get; set; }

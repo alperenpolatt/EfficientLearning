@@ -36,6 +36,18 @@ namespace EfLearning.Data
                     .HasOne(a => a.Announcement)
                     .WithOne(a => a.Material)
                     .HasForeignKey<Announcement>(c => c.MaterialId);
+
+            modelBuilder.Entity<TakenClassroom>()
+                    .HasKey(tc => new { 
+                        tc.UserId, 
+                        tc.GivenClassroomId 
+                    });
+            modelBuilder.Entity<MaterialAnswer>()
+                   .HasKey(ma => new {
+                       ma.UserId,
+                       ma.MaterialId
+                   });
+
             #region aspIdentity
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<AppUser>().Ignore(x => x.PhoneNumber);

@@ -9,7 +9,8 @@ namespace EfLearning.Business.Abstract
 {
     public interface IMaterialAnswerService
     {
-        Task<BasexResponse<ICollection<ScoreResponse>>> GetSumOfPointsByGivenClassroomId(int givenClassroomId,int month);
+        Task<BasexResponse<TotalScoreResponse>> GetTotalScore(int userId);
+        Task<BasexResponse<ICollection<ClassroomScoreResponse>>> GetSumOfPointsByGivenClassroomId(int givenClassroomId,int month);
         Task<BasexResponse<ICollection<MaterialAnswer>>> GetByMaterialId(int materialId);
         Task<BasexResponse<MaterialAnswer>> CreateAsync(MaterialAnswer materialAnswer);
         Task<BasexResponse<MaterialAnswer>> UpdateAsync(MaterialAnswer material);

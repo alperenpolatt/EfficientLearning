@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EfLearning.Data.Migrations
 {
-    public partial class AddCollectionToUser : Migration
+    public partial class newDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -275,7 +275,7 @@ namespace EfLearning.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GivenClassroomId = table.Column<int>(nullable: false),
                     MaterialType = table.Column<int>(nullable: false),
-                    MaterialScale = table.Column<int>(nullable: false),
+                    MaterialScale = table.Column<int>(nullable: true),
                     Question = table.Column<string>(nullable: true),
                     Hint = table.Column<string>(nullable: true),
                     AnnouncementId = table.Column<int>(nullable: false),
@@ -296,27 +296,25 @@ namespace EfLearning.Data.Migrations
                 name: "TakenClassrooms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(nullable: true),
-                    GivenClassroomId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: false),
+                    GivenClassroomId = table.Column<int>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TakenClassrooms", x => x.Id);
+                    table.PrimaryKey("PK_TakenClassrooms", x => new { x.UserId, x.GivenClassroomId });
                     table.ForeignKey(
                         name: "FK_TakenClassrooms_GivenClassrooms_GivenClassroomId",
                         column: x => x.GivenClassroomId,
                         principalTable: "GivenClassrooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TakenClassrooms_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -344,17 +342,15 @@ namespace EfLearning.Data.Migrations
                 name: "MaterialAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Answer = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
-                    CreationTime = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
                     MaterialId = table.Column<int>(nullable: false),
+                    Answer = table.Column<string>(nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
                     Score = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MaterialAnswers", x => x.Id);
+                    table.PrimaryKey("PK_MaterialAnswers", x => new { x.UserId, x.MaterialId });
                     table.ForeignKey(
                         name: "FK_MaterialAnswers_Materials_MaterialId",
                         column: x => x.MaterialId,
@@ -366,7 +362,7 @@ namespace EfLearning.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -375,6 +371,7 @@ namespace EfLearning.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: true),
                     AnnouncementId = table.Column<int>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<int>(nullable: true)
@@ -478,11 +475,6 @@ namespace EfLearning.Data.Migrations
                 column: "MaterialId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaterialAnswers_UserId",
-                table: "MaterialAnswers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Materials_GivenClassroomId",
                 table: "Materials",
                 column: "GivenClassroomId");
@@ -496,11 +488,6 @@ namespace EfLearning.Data.Migrations
                 name: "IX_TakenClassrooms_GivenClassroomId",
                 table: "TakenClassrooms",
                 column: "GivenClassroomId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TakenClassrooms_UserId",
-                table: "TakenClassrooms",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

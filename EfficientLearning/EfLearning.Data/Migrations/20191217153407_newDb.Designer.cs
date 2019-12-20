@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfLearning.Data.Migrations
 {
     [DbContext(typeof(EfContext))]
-    [Migration("20191216181849_desToComment")]
-    partial class desToComment
+    [Migration("20191217153407_newDb")]
+    partial class newDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -74,7 +74,7 @@ namespace EfLearning.Api.Controllers
             {
                 return BadRequest(givenClassroomResponse.Message);
             }
-            return Ok(givenClassroomResponse);
+            return Ok(givenClassroomResponse.Extra);
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]GivenClassroomResource model)
@@ -117,6 +117,6 @@ namespace EfLearning.Api.Controllers
 
             return Ok(givenClassroomResponse.Extra);
         }
-
+        
     }
 }

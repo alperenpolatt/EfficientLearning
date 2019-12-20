@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EfLearning.Business.Responses
 {
-    public class ScoreResponse
+    public class ClassroomScoreResponse
     {
         public int UserId { get; set; }
         public string Name { get; set; }

@@ -26,7 +26,7 @@ namespace EfLearning.Data.Concrete
         public async Task<ICollection<GivenClassroom>> GetBySearchTermAsync(string query)
         {
             return await _context.GivenClassrooms
-                            .Where(gc => gc.Course.Name.Contains(query) || gc.Description.Contains(query))
+                            .Where(gc => gc.Course.Name.Contains(query) || gc.Description.Contains (query)|| (String.Concat(gc.User.Name,String.Empty,gc.User.Surname)).Contains(query))
                             .ToListAsync();
         }
     }

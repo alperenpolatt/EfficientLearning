@@ -64,18 +64,18 @@ namespace EfLearning.Business.Concrete
             }
         }
 
-        public async Task<BasexResponse<ICollection<ScoreResponse>>> GetSumOfPointsByGivenClassroomId(int givenClassroomId, int month)
+        public async Task<BasexResponse<ICollection<ClassroomScoreResponse>>> GetSumOfPointsByGivenClassroomId(int givenClassroomId, int month)
         {
             try
             {
-                var response = new Collection<ScoreResponse>();
+                var response = new Collection<ClassroomScoreResponse>();
                 var materialAnswers =await _materialAnswerDal.GetWithMaterialAndUserAsync(givenClassroomId);
                 var lastXMonth = DateTime.UtcNow.AddMonths(-month);
                 var lastXMonthUsers = materialAnswers.Where(u => u.CreationTime > lastXMonth);
                 var groupedUsers = lastXMonthUsers.GroupBy(u => u.UserId);
                 foreach (var item in groupedUsers)
                 {
-                    response.Add(new ScoreResponse
+                    response.Add(new ClassroomScoreResponse
                     {
                         UserId=item.FirstOrDefault().UserId,
                         Name=item.FirstOrDefault().User.Name,
@@ -85,12 +85,30 @@ namespace EfLearning.Business.Concrete
                     });
                 }
                 var orderedResponse=response.OrderByDescending(a => a.TotalScore).ToList();
-                return new BasexResponse<ICollection<ScoreResponse>>(orderedResponse);
+                return new BasexResponse<ICollection<ClassroomScoreResponse>>(orderedResponse);
             }
             catch (Exception ex)
             {
 
-                return new BasexResponse<ICollection<ScoreResponse>>(ex.Message);
+                return new BasexResponse<ICollection<ClassroomScoreResponse>>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<TotalScoreResponse>> GetTotalScore(int userId)
+        {
+            try
+            {
+                var resultMaterialAnswer = await _materialAnswerDal.FindByAsync(ma => ma.UserId == userId);
+                return new BasexResponse<TotalScoreResponse>(new TotalScoreResponse
+                {
+                    Total = resultMaterialAnswer.Sum(ma => ma.Score),
+                    Star = resultMaterialAnswer.Sum(ma => ma.Score) / 100
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<TotalScoreResponse>(ex.Message);
             }
         }
 

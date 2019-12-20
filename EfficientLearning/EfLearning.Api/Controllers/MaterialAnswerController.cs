@@ -106,5 +106,17 @@ namespace EfLearning.Api.Controllers
 
             return Ok(materialAnswersResponse);
         }
+        [HttpGet("{userId:int}")]
+        public async Task<IActionResult> GetUserSuccess([FromRoute]int userId)
+        {
+            var materialAnswerResponse = await _materialAnswerService.GetTotalScore(userId);
+            if (!materialAnswerResponse.Success)
+            {
+                return BadRequest(materialAnswerResponse.Message);
+            }
+           
+
+            return Ok(materialAnswerResponse.Extra);
+        }
     }
 }

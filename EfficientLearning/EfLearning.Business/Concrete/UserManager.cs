@@ -141,7 +141,7 @@ namespace EfLearning.Business.Concrete
             if (resultUpdate.Succeeded)
             {
                 await _unitOfWork.CompleteAsync();
-                return new BasexResponse<AppUser>(user);
+                return new BasexResponse<AppUser>(resultUser);
             }
             return new BasexResponse<AppUser>(resultUpdate.Errors.FirstOrDefault().Description);
         }

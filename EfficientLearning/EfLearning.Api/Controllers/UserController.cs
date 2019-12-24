@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.User;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Users;
 using EfLearning.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +16,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -22,6 +27,7 @@ namespace EfLearning.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
+        [Authorize(Policy = CustomRoles.Admin)]
         public async Task<IActionResult> GetAllStudents()
         {
             var userListResponse = await _userService.GetUsersByRoleAsync(CustomRoles.Student);
@@ -32,6 +38,7 @@ namespace EfLearning.Api.Controllers
             return Ok(userListResponse.Extra);
         }
         [HttpGet]
+        [Authorize(Policy = CustomRoles.Admin)]
         public async Task<IActionResult> GetAllTeachers()
         {
             var userListResponse = await _userService.GetUsersByRoleAsync(CustomRoles.Teacher);
@@ -42,6 +49,7 @@ namespace EfLearning.Api.Controllers
             return Ok(userListResponse.Extra);
         }
         [HttpPost]
+        [Authorize(Policy = CustomRoles.Admin)]
         public async Task<IActionResult> CreateStudent([FromBody]UserResource model)
         {
             if (!ModelState.IsValid)
@@ -56,6 +64,7 @@ namespace EfLearning.Api.Controllers
             return Ok(userResponse.Extra);
         }
         [HttpPost]
+        [Authorize(Policy = CustomRoles.Admin)]
         public async Task<IActionResult> CreateTeacher([FromBody]UserResource model)
         {
             if (!ModelState.IsValid)
@@ -79,6 +88,7 @@ namespace EfLearning.Api.Controllers
                 return BadRequest(ModelState);
 
             AppUser user = _mapper.Map<UserUpdateResource, AppUser>(model);
+            user.Id= Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var userResponse = await _userService.UpdateUserAsync(user);
 
             if (!userResponse.Success)
@@ -90,6 +100,7 @@ namespace EfLearning.Api.Controllers
         /// This deletes teacher and student
         /// </summary>
         [HttpDelete("{userId:int}")]
+        [Authorize(Policy = CustomRoles.Admin)]
         public async Task<IActionResult> DeleteUser([FromRoute] int userId)
         {
             if (!ModelState.IsValid)
@@ -102,22 +113,23 @@ namespace EfLearning.Api.Controllers
 
             return Ok(userResponse.Extra);
         }
-        [HttpPost]
-        public async Task<IActionResult> GetUserByEmailWithRoleAsync([FromBody]UserWithRoleResource userWithRoleResource)
+        [HttpGet]
+        public async Task<IActionResult> GetUserWithRole()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var userResponse = await _userService.GetUserByEmailWithRoleAsync(userWithRoleResource.Email);
+            var email= HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            var userResponse = await _userService.GetUserByEmailWithRoleAsync(email);
 
             if (!userResponse.Success)
                 return BadRequest(userResponse.Message);
 
             return Ok(userResponse.Extra);
         }
+
         /// <summary>
         /// Bring students who registered the system in terms of last month which is parameter
         /// </summary>
         [HttpGet("{month:int}")]
+        [Authorize(Policy = CustomRoles.Admin)]
         public async Task<IActionResult> GetRegisteredStudentsByMonth([FromRoute] int month)
         {
             var userListResponse = await _userService.GetRegisteredUsersByMonthAsync(month,CustomRoles.Student);

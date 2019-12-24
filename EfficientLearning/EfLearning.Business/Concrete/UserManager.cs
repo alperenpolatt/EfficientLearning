@@ -158,6 +158,16 @@ namespace EfLearning.Business.Concrete
             }
         }
 
-       
+        public async Task<BasexResponse<SimpleUserResponse>> GetUserByIdWithRoleAsync(int userId)
+        {
+            var user = await _aspUserManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return new BasexResponse<SimpleUserResponse>("There is no user with this id ");
+            var role = await _aspUserManager.GetRolesAsync(user);
+
+            var simpleUser = _mapper.Map<AppUser, SimpleUserResponse>(user);
+            simpleUser.RoleName = role.FirstOrDefault();
+            return new BasexResponse<SimpleUserResponse>(simpleUser);
+        }
     }
 }

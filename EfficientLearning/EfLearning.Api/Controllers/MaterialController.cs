@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Classroom;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
 using EfLearning.Core.EntitiesHelper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +15,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;

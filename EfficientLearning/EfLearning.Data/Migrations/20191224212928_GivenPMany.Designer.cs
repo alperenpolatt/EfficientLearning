@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfLearning.Data.Migrations
 {
     [DbContext(typeof(EfContext))]
-    [Migration("20191217153407_newDb")]
-    partial class newDb
+    [Migration("20191224212928_GivenPMany")]
+    partial class GivenPMany
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -169,23 +169,17 @@ namespace EfLearning.Data.Migrations
 
             modelBuilder.Entity("EfLearning.Core.Practices.DonePractice", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime");
+                    b.Property<int>("UserId");
 
                     b.Property<int>("GivenPracticeId");
 
-                    b.Property<int>("Point");
+                    b.Property<DateTime>("CreationTime");
 
-                    b.Property<int?>("UserId");
+                    b.Property<int>("TotalDonePractice");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "GivenPracticeId");
 
                     b.HasIndex("GivenPracticeId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("DonePractices");
                 });
@@ -207,6 +201,8 @@ namespace EfLearning.Data.Migrations
                     b.Property<string>("Question");
 
                     b.Property<string>("Solution");
+
+                    b.Property<string>("Title");
 
                     b.HasKey("Id");
 
@@ -471,7 +467,8 @@ namespace EfLearning.Data.Migrations
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")
                         .WithMany("DonePractices")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EfLearning.Core.Users.RefreshToken", b =>

@@ -1,10 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Classroom;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
 using EfLearning.Core.EntitiesHelper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +17,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TakenClassroomController : ControllerBase
     {
         private readonly ITakenClassroomService _takenClassroomService;
@@ -27,11 +32,11 @@ namespace EfLearning.Api.Controllers
         /// <summary>
         /// bring classrooms which students have
         /// </summary>
-        /// <param name="userId">Student's id</param>
         /// <returns></returns>
-        [HttpGet("{userId:int}")]
-        public async Task<IActionResult> GetClassrooms([FromRoute]int userId)
+        [HttpGet]
+        public async Task<IActionResult> GetClassrooms()
         {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var takenClassroomListResponse = await _takenClassroomService.GetByUserIdAsync(userId);
             if (!takenClassroomListResponse.Success)
             {
@@ -49,10 +54,13 @@ namespace EfLearning.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]TakenClassroomResource model)
         {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             TakenClassroom takenClassroom = _mapper.Map<TakenClassroomResource, TakenClassroom>(model);
+            takenClassroom.UserId = userId;
             var takenClassroomResponse = await _takenClassroomService.CreateAsync(takenClassroom);
 
             if (!takenClassroomResponse.Success)
@@ -61,18 +69,18 @@ namespace EfLearning.Api.Controllers
             return Ok(takenClassroomResponse.Extra);
         }
         /// <summary>
-        /// Leave Classroom UserId and givenClassroomId is composite keys of TakenClassroom Table...
         /// One student joins a classroom one time
         /// </summary>
-        /// <param name="userId">Student's id</param>
         /// <param name="givenClassroomId">student whose id, student who take this classroom </param>
         /// <returns></returns>
-        [HttpDelete("{userId:int}/{givenClassroomId:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int userId, [FromRoute]int givenClassroomId)
+        [HttpDelete("{givenClassroomId:int}")]
+        public async Task<IActionResult> Delete([FromRoute]int givenClassroomId)
         {
+            
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var takenClassroomResponse = await _takenClassroomService.DeleteAsync(userId, givenClassroomId);
 
             if (!takenClassroomResponse.Success)

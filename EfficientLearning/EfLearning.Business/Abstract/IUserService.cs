@@ -13,6 +13,7 @@ namespace EfLearning.Business.Abstract
         Task<BasexResponse<ICollection<UserCountByMonthResponse>>> GetRegisteredUsersByMonthAsync(int month,string roleName);
         Task<BasexResponse<ICollection<AppUser>>> GetUsersByRoleAsync(string roleName);
         Task<BasexResponse<SimpleUserResponse>> GetUserByEmailWithRoleAsync(string email);
+        Task<BasexResponse<SimpleUserResponse>> GetUserByIdWithRoleAsync(int userId);
         Task<BasexResponse<AppUser>> CreateStudentAsync(AppUser user,string password);
         Task<BasexResponse<AppUser>> CreateTeacherAsync(AppUser user,string password);
         Task<BasexResponse<AppUser>> UpdateUserAsync(AppUser user);

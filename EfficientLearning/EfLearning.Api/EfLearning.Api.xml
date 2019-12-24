@@ -4,11 +4,10 @@
         <name>EfLearning.Api</name>
     </assembly>
     <members>
-        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassrooms(System.Int32)">
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassrooms">
             <summary>
-            bring classrooms which teachers have
+            For teacher bring classrooms which teachers have
             </summary>
-            <param name="userId">Teacher's id</param>
             <returns></returns>
         </member>
         <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetStudents(System.Int32)">
@@ -18,12 +17,11 @@
             <param name="givenClassroomId">GivenClassroomId</param>
             <returns></returns>
         </member>
-        <member name="M:EfLearning.Api.Controllers.MaterialAnswerController.Delete(System.Int32,System.Int32)">
+        <member name="M:EfLearning.Api.Controllers.MaterialAnswerController.Delete(System.Int32)">
             <summary>
             Because one student can answer one time... UserId and materialId is composite keys of
             MaterialAnswerTable
             </summary>
-            <param name="userId">Student's id</param>
             <param name="materialId">Student's answer of material</param>
             <returns></returns>
         </member>
@@ -34,19 +32,16 @@
             <param name="givenClassroomId">givenClassroom id</param>
             <returns></returns>
         </member>
-        <member name="M:EfLearning.Api.Controllers.TakenClassroomController.GetClassrooms(System.Int32)">
+        <member name="M:EfLearning.Api.Controllers.TakenClassroomController.GetClassrooms">
             <summary>
             bring classrooms which students have
             </summary>
-            <param name="userId">Student's id</param>
             <returns></returns>
         </member>
-        <member name="M:EfLearning.Api.Controllers.TakenClassroomController.Delete(System.Int32,System.Int32)">
+        <member name="M:EfLearning.Api.Controllers.TakenClassroomController.Delete(System.Int32)">
             <summary>
-            Leave Classroom UserId and givenClassroomId is composite keys of TakenClassroom Table...
             One student joins a classroom one time
             </summary>
-            <param name="userId">Student's id</param>
             <param name="givenClassroomId">student whose id, student who take this classroom </param>
             <returns></returns>
         </member>

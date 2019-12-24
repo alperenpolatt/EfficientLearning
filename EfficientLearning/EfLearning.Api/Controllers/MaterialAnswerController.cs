@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Classroom;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +18,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MaterialAnswerController : ControllerBase
     {
         private readonly IMaterialAnswerService _materialAnswerService;
@@ -27,10 +31,13 @@ namespace EfLearning.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]MaterialAnswerResource model)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             MaterialAnswer materialAnswer = _mapper.Map<MaterialAnswerResource, MaterialAnswer>(model);
+            materialAnswer.UserId= userId;
             var materialAnswerResponse = await _materialAnswerService.CreateAsync(materialAnswer);
 
             if (!materialAnswerResponse.Success)
@@ -42,15 +49,15 @@ namespace EfLearning.Api.Controllers
         /// Because one student can answer one time... UserId and materialId is composite keys of
         /// MaterialAnswerTable
         /// </summary>
-        /// <param name="userId">Student's id</param>
         /// <param name="materialId">Student's answer of material</param>
         /// <returns></returns>
-        [HttpDelete("{userId:int}/{materialId:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int userId, [FromRoute] int materialId)
+        [HttpDelete("{materialId:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int materialId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var materialAnswerResponse = await _materialAnswerService.DeleteByIdAsync(userId,materialId);
 
             if (!materialAnswerResponse.Success)
@@ -106,9 +113,10 @@ namespace EfLearning.Api.Controllers
 
             return Ok(materialAnswersResponse);
         }
-        [HttpGet("{userId:int}")]
-        public async Task<IActionResult> GetUserSuccess([FromRoute]int userId)
+        [HttpGet]
+        public async Task<IActionResult> GetUserSuccess()
         {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var materialAnswerResponse = await _materialAnswerService.GetTotalScore(userId);
             if (!materialAnswerResponse.Success)
             {

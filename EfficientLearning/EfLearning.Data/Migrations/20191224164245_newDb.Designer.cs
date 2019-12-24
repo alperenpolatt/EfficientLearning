@@ -4,14 +4,16 @@ using EfLearning.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EfLearning.Data.Migrations
 {
     [DbContext(typeof(EfContext))]
-    partial class EfContextModelSnapshot : ModelSnapshot
+    [Migration("20191224164245_newDb")]
+    partial class newDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,7 +179,8 @@ namespace EfLearning.Data.Migrations
 
                     b.HasKey("UserId", "GivenPracticeId");
 
-                    b.HasIndex("GivenPracticeId");
+                    b.HasIndex("GivenPracticeId")
+                        .IsUnique();
 
                     b.ToTable("DonePractices");
                 });
@@ -459,8 +462,8 @@ namespace EfLearning.Data.Migrations
             modelBuilder.Entity("EfLearning.Core.Practices.DonePractice", b =>
                 {
                     b.HasOne("EfLearning.Core.Practices.GivenPractice", "GivenPractice")
-                        .WithMany("DonePractices")
-                        .HasForeignKey("GivenPracticeId")
+                        .WithOne("DonePractice")
+                        .HasForeignKey("EfLearning.Core.Practices.DonePractice", "GivenPracticeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EfLearning.Core.Users.AppUser", "User")

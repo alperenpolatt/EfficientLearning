@@ -11,8 +11,6 @@ namespace EfLearning.Api.Resources.Classroom
         [Required]
         public string Answer { get; set; }
         [Required]
-        public int UserId { get; set; }
-        [Required]
         public int MaterialId { get; set; }
     }
 }

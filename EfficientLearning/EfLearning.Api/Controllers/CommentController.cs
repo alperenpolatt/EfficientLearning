@@ -2,8 +2,13 @@
 using EfLearning.Api.Resources.Announcement;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Announcements;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EfLearning.Api.Controllers
@@ -11,6 +16,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
@@ -37,8 +43,11 @@ namespace EfLearning.Api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
 
             Comment comment = _mapper.Map<CommentResource, Comment>(model);
+            comment.UserId= userId;
+            
             var commentResponse = await _commentService.CreateAsync(comment);
 
             if (!commentResponse.Success)

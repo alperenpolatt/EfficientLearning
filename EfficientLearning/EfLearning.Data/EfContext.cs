@@ -47,6 +47,11 @@ namespace EfLearning.Data
                        ma.UserId,
                        ma.MaterialId
                    });
+            modelBuilder.Entity<DonePractice>()
+                   .HasKey(dp => new {
+                       dp.UserId,
+                       dp.GivenPracticeId
+                   });
 
             #region aspIdentity
             base.OnModelCreating(modelBuilder);
@@ -57,13 +62,11 @@ namespace EfLearning.Data
         }
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<Comment> Comments { get; set; }
-
         public DbSet<Course> Courses { get; set; }
         public DbSet<GivenClassroom> GivenClassrooms { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<MaterialAnswer> MaterialAnswers { get; set; }
         public DbSet<TakenClassroom> TakenClassrooms { get; set; }
-
         public DbSet<DonePractice> DonePractices { get; set; }
         public DbSet<GivenPractice> GivenPractices { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }

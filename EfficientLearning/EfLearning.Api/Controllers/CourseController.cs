@@ -1,10 +1,14 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Course;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
 using EfLearning.Core.EntitiesHelper;
+using EfLearning.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 namespace EfLearning.Api.Controllers
@@ -12,6 +16,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;

@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Classroom;
 using EfLearning.Business.Abstract;
 using EfLearning.Core.Classrooms;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +16,7 @@ namespace EfLearning.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GivenClassroomController : ControllerBase
     {
         private readonly IGivenClassroomService _givenClassroomService;
@@ -29,14 +34,15 @@ namespace EfLearning.Api.Controllers
                 return BadRequest(givenClassroomList.Message);
             return Ok(givenClassroomList.Extra);
         }
+       
         /// <summary>
-        /// bring classrooms which teachers have
+        /// For teacher bring classrooms which teachers have
         /// </summary>
-        /// <param name="userId">Teacher's id</param>
         /// <returns></returns>
-        [HttpGet("{userId:int}")]
-        public async Task<IActionResult> GetClassrooms([FromRoute]int userId)
+        [HttpGet]
+        public async Task<IActionResult> GetClassrooms()
         {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var givenClassroomListResponse = await _givenClassroomService.GetByUserIdAsync(userId);
             if (!givenClassroomListResponse.Success)
             {
@@ -49,7 +55,7 @@ namespace EfLearning.Api.Controllers
         /// </summary>
         /// <param name="givenClassroomId">GivenClassroomId</param>
         /// <returns></returns>
-        [HttpGet("{classroomId:int}")]
+        [HttpGet("{givenClassroomId:int}")]
         public async Task<IActionResult> GetStudents([FromRoute]int givenClassroomId)
         {
             var givenClassroomResponse = await _givenClassroomService.GetByIdAsync(givenClassroomId);
@@ -82,9 +88,10 @@ namespace EfLearning.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             GivenClassroom givenClassroom = _mapper.Map<GivenClassroomResource, GivenClassroom>(model);
+            givenClassroom.UserId= userId;
             var givenClassroomResponse = await _givenClassroomService.CreateAsync(givenClassroom);
-
             if (!givenClassroomResponse.Success)
                 return BadRequest(givenClassroomResponse.Message);
 

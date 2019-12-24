@@ -7,6 +7,7 @@ namespace EfLearning.Core.Practices
     public class GivenPractice : RootEntity<int>
     {
         public int Level { get; set; }
+        public string Title { get; set; }
         public string Definition { get; set; }
         public ProgrammingType ProgrammingType { get; set; }
         public string Question { get; set; }

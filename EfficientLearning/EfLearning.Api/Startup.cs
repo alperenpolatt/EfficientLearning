@@ -60,6 +60,12 @@ namespace EfLearning.Api
             services.AddScoped<ICommentService, CommentManager>();
             services.AddScoped<ICommentDal, CommentDal>();
 
+            services.AddScoped<IGivenPracticeService, GivenPracticeManager>();
+            services.AddScoped<IGivenPracticeDal, GivenPracticeDal>();
+
+            services.AddScoped<IDonePracticeService, DonePracticeManager>();
+            services.AddScoped<IDonePracticeDal, DonePracticeDal>();
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddTransient<IEmailSender, EmailSender>();
 

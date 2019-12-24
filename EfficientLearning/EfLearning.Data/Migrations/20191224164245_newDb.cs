@@ -70,6 +70,7 @@ namespace EfLearning.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Level = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
                     Definition = table.Column<string>(nullable: true),
                     ProgrammingType = table.Column<byte>(nullable: false),
                     Question = table.Column<string>(nullable: true),
@@ -243,16 +244,14 @@ namespace EfLearning.Data.Migrations
                 name: "DonePractices",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: false),
                     GivenPracticeId = table.Column<int>(nullable: false),
-                    Point = table.Column<int>(nullable: false),
+                    TotalDonePractice = table.Column<int>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DonePractices", x => x.Id);
+                    table.PrimaryKey("PK_DonePractices", x => new { x.UserId, x.GivenPracticeId });
                     table.ForeignKey(
                         name: "FK_DonePractices_GivenPractices_GivenPracticeId",
                         column: x => x.GivenPracticeId,
@@ -264,7 +263,7 @@ namespace EfLearning.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -452,12 +451,8 @@ namespace EfLearning.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DonePractices_GivenPracticeId",
                 table: "DonePractices",
-                column: "GivenPracticeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DonePractices_UserId",
-                table: "DonePractices",
-                column: "UserId");
+                column: "GivenPracticeId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_GivenClassrooms_CourseId",

@@ -9,6 +9,7 @@ namespace EfLearning.Api.Resources.User
     public class UserWithRoleResource
     {
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
     }
 }

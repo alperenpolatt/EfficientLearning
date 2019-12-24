@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace EfLearning.Api.Resources.User
 {
-    public class UserUpdateResource:IUpdatableResource
+    public class UserUpdateResource
     {
-        [Required]
-        public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]

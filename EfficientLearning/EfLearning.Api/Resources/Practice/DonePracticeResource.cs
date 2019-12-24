@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EfLearning.Api.Resources.Classroom
+namespace EfLearning.Api.Resources.Practice
 {
-    public class TakenClassroomResource
+    public class DonePracticeResource
     {
         
         [Required]
-        public int GivenClassroomId { get; set; }
+        public int GivenPracticeId { get; set; }
     }
 }

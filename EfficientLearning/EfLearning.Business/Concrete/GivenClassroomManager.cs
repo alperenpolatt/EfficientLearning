@@ -105,6 +105,19 @@ namespace EfLearning.Business.Concrete
             }
         }
 
+        public async Task<BasexResponse<CountResponse>> GetStudentsCountAsync(int userId)
+        {
+            try
+            {
+                var result = await _givenClassroomDal.GetNumberOfStudentsAsync(userId);
+                return new BasexResponse<CountResponse>(new CountResponse { Count = result });
+            }
+            catch (Exception ex)
+            {
+                return new BasexResponse<CountResponse>(ex.Message);
+            }
+        }
+
         public async Task<BasexResponse<GivenClassroom>> UpdateAsync(GivenClassroom givenClassroom)
         {
             try

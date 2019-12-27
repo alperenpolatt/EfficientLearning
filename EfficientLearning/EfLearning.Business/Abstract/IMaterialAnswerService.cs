@@ -11,6 +11,7 @@ namespace EfLearning.Business.Abstract
     {
         Task<BasexResponse<TotalScoreResponse>> GetTotalScore(int userId);
         Task<BasexResponse<ICollection<ClassroomScoreResponse>>> GetSumOfPointsByGivenClassroomId(int givenClassroomId,int month);
+        Task<BasexResponse<CountResponse>> GetMaterialCountAsync(int userId);
         Task<BasexResponse<ICollection<MaterialAnswer>>> GetByMaterialId(int materialId);
         Task<BasexResponse<MaterialAnswer>> CreateAsync(MaterialAnswer materialAnswer);
         Task<BasexResponse<MaterialAnswer>> UpdateAsync(MaterialAnswer material);

@@ -124,6 +124,35 @@ namespace EfLearning.Api.Controllers
 
             return Ok(givenClassroomResponse.Extra);
         }
-        
+        /// <summary>
+        /// Bring number of classes which the user has (Teacher)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetOwnCount()
+        {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var response = await _givenClassroomService.GetByUserIdAsync(userId);
+            if (!response.Success)
+            {
+                return BadRequest(response.Message);
+            }
+            return Ok(response.Extra.Count);
+        }
+        /// <summary>
+        /// Bring number of students which the user has (Teacher)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetStudentsCount()
+        {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var response = await _givenClassroomService.GetStudentsCountAsync(userId);
+            if (!response.Success)
+            {
+                return BadRequest(response.Message);
+            }
+            return Ok(response.Extra.Count);
+        }
     }
 }

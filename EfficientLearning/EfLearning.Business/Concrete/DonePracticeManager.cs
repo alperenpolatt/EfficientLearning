@@ -1,4 +1,5 @@
-﻿using EfLearning.Business.Abstract;
+﻿using AutoMapper;
+using EfLearning.Business.Abstract;
 using EfLearning.Business.Common;
 using EfLearning.Business.Responses;
 using EfLearning.Core.EntitiesHelper;
@@ -17,10 +18,12 @@ namespace EfLearning.Business.Concrete
     {
         private readonly IUnitOfWork _unitOfWork;
         private IDonePracticeDal _donePracticeDal;
-        public DonePracticeManager(IUnitOfWork unitOfWork, IDonePracticeDal donePracticeDal)
+        private readonly IMapper _mapper;
+        public DonePracticeManager(IUnitOfWork unitOfWork, IDonePracticeDal donePracticeDal, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _donePracticeDal = donePracticeDal;
+            _mapper = mapper;
         }
 
         public async Task<BasexResponse<TakenPointResponse>> CreateAsync(DonePractice donePractice)
@@ -86,6 +89,27 @@ namespace EfLearning.Business.Concrete
             }
             catch (Exception ex)
             {
+                return new BasexResponse<ICollection<DonePracticeNotificationResponse>>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<ICollection<DonePracticeNotificationResponse>>> GetLastPracticesAsync(int userId, int count)
+        {
+            try
+            {
+                var result = (await _donePracticeDal.GetByUserIdWithGivenPracticeAsync(userId)).OrderBy(d=>d.CreationTime).Take(count);
+                var resultDone = result.Select(p => new DonePracticeNotificationResponse { 
+                    GivenPracticeId=p.GivenPracticeId,
+                    Level=p.GivenPractice.Level,
+                    ProgrammingType=p.GivenPractice.ProgrammingType.Description(),
+                    Title=p.GivenPractice.Title
+                });
+                
+                return new BasexResponse<ICollection<DonePracticeNotificationResponse>>(resultDone.ToList());
+            }
+            catch (Exception ex)
+            {
+
                 return new BasexResponse<ICollection<DonePracticeNotificationResponse>>(ex.Message);
             }
         }

@@ -1,10 +1,13 @@
-﻿using EfLearning.Business.Abstract;
+﻿using AutoMapper;
+using EfLearning.Business.Abstract;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Announcements;
 using EfLearning.Core.Classrooms;
 using EfLearning.Data.Abstract;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EfLearning.Business.Concrete
@@ -14,11 +17,15 @@ namespace EfLearning.Business.Concrete
         private readonly IUnitOfWork _unitOfWork;
         private IMaterialDal _materialDal;
         private IAnnouncementDal _announcementDal;
-        public MaterailManager(IUnitOfWork unitOfWork, IMaterialDal materialDal, IAnnouncementDal announcementDal)
+        private ITakenClassroomDal _takenClassroomDal;
+        private readonly IMapper _mapper;
+        public MaterailManager(IUnitOfWork unitOfWork, IMaterialDal materialDal, IAnnouncementDal announcementDal, ITakenClassroomDal takenClassroomDal, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _materialDal = materialDal;
             _announcementDal = announcementDal;
+            _takenClassroomDal = takenClassroomDal;
+            _mapper = mapper;
         }
 
         public async Task<BasexResponse<Material>> CreateAsync(Material material,string description)
@@ -64,6 +71,53 @@ namespace EfLearning.Business.Concrete
             }
         }
 
+        public async Task<BasexResponse<MaterialQuestionResponse>> GetByIdAsync(int id)
+        {
+            try
+            {
+                var resMaterial = await _materialDal.GetAsync(id);
+                var material = _mapper.Map<Material, MaterialQuestionResponse>(resMaterial);
+                return new BasexResponse<MaterialQuestionResponse>(material);
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<MaterialQuestionResponse>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<ICollection<CloseMaterialResponse>>> GetCloseMaterials(int userId)
+        {
+            try
+            {
+                var materials = (await _takenClassroomDal.GetByUserIdWithGivenClassroomAndItsMaterialsAsync(userId)).SelectMany(a => a.GivenClassroom.Materials);
+                var closeMaterial = materials.Where(m => (m.Deadline.Value.Subtract(DateTime.UtcNow)).TotalMinutes <= (5*24*60) 
+                && (m.Deadline.Value.Subtract(DateTime.UtcNow)).TotalMilliseconds > 0);
+
+                var list = new Collection<CloseMaterialResponse>();
+
+                foreach (var item in closeMaterial)
+                {
+                    list.Add(new CloseMaterialResponse
+                    {
+                        Id=item.Id,
+                        Deadline=item.Deadline.Value,
+                        Description=item.Announcement.Description,
+                        GivenClassroomId=item.GivenClassroomId,
+                        CreationTime=item.CreationTime
+                    });
+                }
+
+
+                return new BasexResponse<ICollection<CloseMaterialResponse>>(list);
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<ICollection<CloseMaterialResponse>>(ex.Message);
+            }
+        }
+
         public async Task<BasexResponse<ICollection<Material>>> GetMaterialsByGivenClassroomId(int givenClassroomId)
         {
             try
@@ -103,6 +157,83 @@ namespace EfLearning.Business.Concrete
             catch (Exception ex)
             {
                 return new BasexResponse<Material>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<CountResponse>> GetMaterialCountAsync(int userId)
+        {
+            try
+            {
+
+                var count =await  _materialDal.GetNumberOfMaterialAsync(userId);
+                return new BasexResponse<CountResponse>(new CountResponse { Count = count });
+            }
+            catch (Exception ex)
+            {
+                return new BasexResponse<CountResponse>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<ICollection<CloseMaterialResponse>>> GetFreshMaterials(int userId)
+        {
+            try
+            {
+                var materials = (await _takenClassroomDal.GetByUserIdWithGivenClassroomAndItsMaterialsAsync(userId)).SelectMany(a => a.GivenClassroom.Materials);
+                var freshMaterial = materials.Where(m => DateTime.UtcNow.Subtract(m.CreationTime).TotalDays<=1);
+
+
+                var list = new Collection<CloseMaterialResponse>();
+
+                foreach (var item in freshMaterial)
+                {
+                    list.Add(new CloseMaterialResponse
+                    {
+                        Id = item.Id,
+                        Deadline = item.Deadline.Value,
+                        Description = item.Announcement.Description,
+                        GivenClassroomId = item.GivenClassroomId,
+                        CreationTime = item.CreationTime
+                    });
+                }
+
+
+                return new BasexResponse<ICollection<CloseMaterialResponse>>(list);
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<ICollection<CloseMaterialResponse>>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<ICollection<MaterialResultResponse>>> GetMaterialsAndAnwers(int userId, int givenClassroomId)
+        {
+            try
+            {
+                var materials = await _materialDal.GetWithAnnouncementAndAnswerAsync(givenClassroomId);
+                var usersAnswers = materials.Where(m => m.MaterialAnswers.Any(ma => ma.UserId == userId)).SelectMany(m=>m.MaterialAnswers);
+                var list = new Collection<MaterialResultResponse>();
+                foreach (var item in materials)
+                {
+                    list.Add(new MaterialResultResponse
+                    {
+                        Id = item.Id,
+                        CreationTime = item.CreationTime,
+                        Deadline = item.Deadline.Value,
+                        Description = item.Announcement.Description,
+                        MaterialType = item.MaterialType,
+                        Score = usersAnswers.FirstOrDefault(m => m.MaterialId == item.Id)?.Score
+                    }) ;
+                }
+                
+
+
+                return new BasexResponse<ICollection<MaterialResultResponse>>(list);
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<ICollection<MaterialResultResponse>>(ex.Message);
             }
         }
     }

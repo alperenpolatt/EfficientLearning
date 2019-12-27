@@ -27,8 +27,6 @@ namespace EfLearning.Api.Controllers
             _takenClassroomService = takenClassroomService;
             _mapper = mapper;
         }
-
-
         /// <summary>
         /// bring classrooms which students have
         /// </summary>
@@ -50,6 +48,21 @@ namespace EfLearning.Api.Controllers
                 CourseProgrammingLanguage=u.GivenClassroom.Course.ProgrammingType.ToString()
             });
             return Ok(takenClassrooms);
+        }
+        /// <summary>
+        /// Bring number of classes which the user joined (student)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetJoinedCount()
+        {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var takenClassroomListResponse = await _takenClassroomService.GetByUserIdAsync(userId);
+            if (!takenClassroomListResponse.Success)
+            {
+                return BadRequest(takenClassroomListResponse.Message);
+            }
+            return Ok(takenClassroomListResponse.Extra.Count);
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]TakenClassroomResource model)

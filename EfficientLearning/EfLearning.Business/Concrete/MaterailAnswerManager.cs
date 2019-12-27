@@ -64,6 +64,20 @@ namespace EfLearning.Business.Concrete
             }
         }
 
+        public async Task<BasexResponse<CountResponse>> GetMaterialCountAsync(int userId)
+        {
+            try
+            {
+                var result = (await _materialAnswerDal.FindByAsync(m=>m.UserId==userId)).Count;
+                return new BasexResponse<CountResponse>(new CountResponse { Count=result});
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<CountResponse>(ex.Message);
+            }
+        }
+
         public async Task<BasexResponse<ICollection<ClassroomScoreResponse>>> GetSumOfPointsByGivenClassroomId(int givenClassroomId, int month)
         {
             try

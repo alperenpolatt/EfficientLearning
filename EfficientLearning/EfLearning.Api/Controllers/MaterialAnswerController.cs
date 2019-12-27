@@ -109,9 +109,7 @@ namespace EfLearning.Api.Controllers
             {
                 return BadRequest(materialAnswersResponse.Message);
             }
-           
-
-            return Ok(materialAnswersResponse);
+            return Ok(materialAnswersResponse.Extra);
         }
         [HttpGet]
         public async Task<IActionResult> GetUserSuccess()
@@ -125,6 +123,17 @@ namespace EfLearning.Api.Controllers
            
 
             return Ok(materialAnswerResponse.Extra);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDoneMaterialCount()
+        {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var takenClassroomListResponse = await _materialAnswerService.GetMaterialCountAsync(userId);
+            if (!takenClassroomListResponse.Success)
+            {
+                return BadRequest(takenClassroomListResponse.Message);
+            }
+            return Ok(takenClassroomListResponse.Extra.Count);
         }
     }
 }

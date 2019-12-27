@@ -18,6 +18,7 @@ namespace EfLearning.Core.Classrooms
 
         public int AnnouncementId { get; set; }
         public virtual Announcement Announcement { get; set; }
+        public DateTime? Deadline { get; set; }
         public DateTime CreationTime { get; set; }
         public virtual ICollection<MaterialAnswer> MaterialAnswers { get; set; }
     }

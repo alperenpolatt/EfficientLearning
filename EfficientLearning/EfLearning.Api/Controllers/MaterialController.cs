@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using EfLearning.Api.Resources.Classroom;
@@ -51,7 +51,6 @@ namespace EfLearning.Api.Controllers
 
             return Ok(simplyResponse);
         }
-
         [HttpPut]
         public async Task<IActionResult> Update([FromBody]MaterialUpdateResource model)
         {
@@ -96,9 +95,82 @@ namespace EfLearning.Api.Controllers
             return Ok(materialResponse.Extra);
         }
         [HttpGet]
+        public async Task<IActionResult> GetResponsibleMaterialsCount()
+        {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var materialResponse = await _materialService.GetMaterialCountAsync(userId);
+            if (!materialResponse.Success)
+            {
+                return BadRequest(materialResponse.Message);
+            }
+
+            return Ok(materialResponse.Extra);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetMaterialDetail([FromRoute]int id)
+        {
+            var materialResponse = await _materialService.GetByIdAsync(id);
+            if (!materialResponse.Success)
+            {
+                return BadRequest(materialResponse.Message);
+            }
+            return Ok(materialResponse.Extra);
+        }
+        /// <summary>
+        /// Bring responsible Materials and student's result , point if student submited an answer for material and if teacher gave a point
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{givenClassroomId:int}")]
+        public async Task<IActionResult> GetMaterialsAndResults(int givenClassroomId)
+        {
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var materialResponse = await _materialService.GetMaterialsAndAnwers(userId, givenClassroomId);
+            if (!materialResponse.Success)
+            {
+                return BadRequest(materialResponse.Message);
+            }
+            return Ok(materialResponse.Extra);
+        }
+        [HttpGet]
         public IActionResult GetAllMaterialTypes()
         {
             return Ok(TypeExtension.ToList<MaterialType>());
+        }
+        /// <summary>
+        /// Bring Close Material in 5 days...
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetCloseMaterialsByDeadline()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var notificationResponse = await _materialService.GetCloseMaterials(userId);
+
+            if (!notificationResponse.Success)
+                return BadRequest(notificationResponse.Message);
+            return Ok(notificationResponse.Extra);
+        }
+
+        /// <summary>
+        /// Bring created Materials which in last 24 hours...
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetFreshMaterials()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var notificationResponse = await _materialService.GetFreshMaterials(userId);
+
+            if (!notificationResponse.Success)
+                return BadRequest(notificationResponse.Message);
+            return Ok(notificationResponse.Extra);
         }
     }
 }

@@ -29,5 +29,15 @@ namespace EfLearning.Data.Concrete
                             .Where(gc => gc.Course.Name.Contains(query) || gc.Description.Contains (query)|| (String.Concat(gc.User.Name,String.Empty,gc.User.Surname)).Contains(query))
                             .ToListAsync();
         }
+
+        public  async Task<int> GetNumberOfStudentsAsync(int userId)
+        {
+            var all = _context.GivenClassrooms
+                                    .Where(gc => gc.UserId == userId)
+                                    .Include(gc => gc.TakenClassrooms)
+                                    .SelectMany(gc=>gc.TakenClassrooms);
+
+            return await all.CountAsync();
+        }
     }
 }

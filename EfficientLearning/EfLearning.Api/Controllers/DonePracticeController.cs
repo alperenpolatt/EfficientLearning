@@ -43,11 +43,13 @@ namespace EfLearning.Api.Controllers
                 return BadRequest(courseResponse.Message);
             return Ok(courseResponse.Extra);
         }
+        /// <summary>
+        /// Reminder for practice
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetNotifications()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var notificationResponse = await _donePracticeService.GetByDateAsync(userId);
@@ -55,6 +57,21 @@ namespace EfLearning.Api.Controllers
             if (!notificationResponse.Success)
                 return BadRequest(notificationResponse.Message);
             return Ok(notificationResponse.Extra);
+        }
+        /// <summary>
+        /// Bring last 10 done practices which user did before
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetLastPractices()
+        {
+
+            var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
+            var response = await _donePracticeService.GetLastPracticesAsync(userId, 10);
+
+            if (!response.Success)
+                return BadRequest(response.Message);
+            return Ok(response.Extra);
         }
     }
 }

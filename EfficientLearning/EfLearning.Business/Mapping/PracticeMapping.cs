@@ -13,6 +13,7 @@ namespace EfLearning.Business.Mapping
         {
             CreateMap<GivenPractice, LevelResponse>();
             CreateMap<GivenPractice, LevelDetailResponse>();
+            CreateMap<DonePractice, DonePracticeNotificationResponse>();
         }
     }
 }

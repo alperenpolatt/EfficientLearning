@@ -17,5 +17,6 @@ namespace EfLearning.Api.Resources.Classroom
         public string Question { get; set; }
         public string Hint { get; set; }
         public string Description { get; set; }//For Announcement
+        public DateTime Deadline { get; set; }
     }
 }

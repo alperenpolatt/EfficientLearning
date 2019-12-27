@@ -11,5 +11,6 @@ namespace EfLearning.Business.Abstract
     {
         Task<BasexResponse<TakenPointResponse>> CreateAsync(DonePractice donePractice);
         Task<BasexResponse<ICollection<DonePracticeNotificationResponse>>> GetByDateAsync(int userId);
+        Task<BasexResponse<ICollection<DonePracticeNotificationResponse>>> GetLastPracticesAsync(int userId,int count);
     }
 }

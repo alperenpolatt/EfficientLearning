@@ -4,6 +4,18 @@
         <name>EfLearning.Api</name>
     </assembly>
     <members>
+        <member name="M:EfLearning.Api.Controllers.DonePracticeController.GetNotifications">
+            <summary>
+            Reminder for practice
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.DonePracticeController.GetLastPractices">
+            <summary>
+            Bring last 10 done practices which user did before
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetClassrooms">
             <summary>
             For teacher bring classrooms which teachers have
@@ -15,6 +27,18 @@
             bring classrooms with students who take this classroom
             </summary>
             <param name="givenClassroomId">GivenClassroomId</param>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetOwnCount">
+            <summary>
+            Bring number of classes which the user has (Teacher)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.GivenClassroomController.GetStudentsCount">
+            <summary>
+            Bring number of students which the user has (Teacher)
+            </summary>
             <returns></returns>
         </member>
         <member name="M:EfLearning.Api.Controllers.MaterialAnswerController.Delete(System.Int32)">
@@ -32,9 +56,33 @@
             <param name="givenClassroomId">givenClassroom id</param>
             <returns></returns>
         </member>
+        <member name="M:EfLearning.Api.Controllers.MaterialController.GetMaterialsAndResults(System.Int32)">
+            <summary>
+            Bring responsible Materials and student's result , point if student submited an answer for material and if teacher gave a point
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.MaterialController.GetCloseMaterialsByDeadline">
+            <summary>
+            Bring Close Material in 5 days...
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.MaterialController.GetFreshMaterials">
+            <summary>
+            Bring created Materials which in last 24 hours...
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:EfLearning.Api.Controllers.TakenClassroomController.GetClassrooms">
             <summary>
             bring classrooms which students have
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EfLearning.Api.Controllers.TakenClassroomController.GetJoinedCount">
+            <summary>
+            Bring number of classes which the user joined (student)
             </summary>
             <returns></returns>
         </member>

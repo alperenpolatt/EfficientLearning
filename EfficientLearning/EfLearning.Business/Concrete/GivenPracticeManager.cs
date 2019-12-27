@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using EfLearning.Business.Abstract;
-using EfLearning.Business.Common;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Classrooms;
 using EfLearning.Core.Practices;
 using EfLearning.Data.Abstract;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EfLearning.Business.Concrete

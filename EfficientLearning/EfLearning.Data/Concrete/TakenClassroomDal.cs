@@ -30,5 +30,14 @@ namespace EfLearning.Data.Concrete
                             .ThenInclude(gc => gc.Course).ToListAsync();
                             
         }
+
+        public async Task<ICollection<TakenClassroom>> GetByUserIdWithGivenClassroomAndItsMaterialsAsync(int userId)
+        {
+            return await _context.TakenClassrooms
+                            .Where(tc => tc.UserId == userId)
+                            .Include(tc => tc.GivenClassroom)
+                            .ThenInclude(gc => gc.Materials)
+                            .ThenInclude(mc=>mc.Announcement).ToListAsync();
+        }
     }
 }

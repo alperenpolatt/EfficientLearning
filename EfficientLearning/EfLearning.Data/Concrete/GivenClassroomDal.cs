@@ -39,5 +39,12 @@ namespace EfLearning.Data.Concrete
 
             return await all.CountAsync();
         }
+
+        public async Task<ICollection<GivenClassroom>> GetWithTakenClassroomAsync()
+        {
+            var all = _context.GivenClassrooms
+                                   .Include(gc => gc.TakenClassrooms);
+            return  await all.ToListAsync();
+        }
     }
 }

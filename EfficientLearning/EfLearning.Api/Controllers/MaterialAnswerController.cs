@@ -112,7 +112,7 @@ namespace EfLearning.Api.Controllers
             return Ok(materialAnswersResponse.Extra);
         }
         [HttpGet]
-        public async Task<IActionResult> GetUserSuccess()
+        private async Task<IActionResult> GetUserSuccess()
         {
             var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));
             var materialAnswerResponse = await _materialAnswerService.GetTotalScore(userId);

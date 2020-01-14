@@ -48,7 +48,7 @@ namespace EfLearning.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetNotifications()
+        private async Task<IActionResult> GetNotifications()
         {
 
             var userId = Int32.Parse((HttpContext.User.FindFirst("id").Value));

@@ -17,5 +17,7 @@ namespace EfLearning.Business.Abstract
         Task<BasexResponse<GivenClassroom>> UpdateAsync(GivenClassroom givenClassroom);
         Task<BasexResponse<GivenClassroom>> DeleteByIdAsync(int givenClassroomId);
         Task<BasexResponse<CountResponse>> GetStudentsCountAsync(int userId);
+        Task<BasexResponse<ICollection<PopularClassResponse>>> GetByMostStudentsAsync();
+        Task<BasexResponse<TotalScoreResponse>> GetTotalScore(int userId);
     }
 }

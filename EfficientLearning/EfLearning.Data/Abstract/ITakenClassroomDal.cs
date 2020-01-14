@@ -10,6 +10,7 @@ namespace EfLearning.Data.Abstract
     {
         Task<ICollection<TakenClassroom>> GetByUserIdWithGivenClassroomAndCourseAsync(int userId);
         Task<ICollection<TakenClassroom>> GetByUserIdWithGivenClassroomAndItsMaterialsAsync(int userId);
+        Task<ICollection<TakenClassroom>> GetByUserIdWithGivenClassroomAndItsMaterialsAndOwnAsync(int userId);
         Task<TakenClassroom> DeleteByCompositeKeysAsync(int userId, int givenClassroomId);
     }
 }

@@ -58,7 +58,7 @@ namespace EfLearning.Business.Concrete
             {
                 var givenPractices = await _givenPracticeDal.GetAsync(id);
                 var answerSuccess = false;
-                char[] charsToTrim = { '\"', '\n' , '\r' };
+                char[] charsToTrim = { '\"', '\n' , '\r' }; // 1-double quat("), 2and3 new lines
                 var repSol = new String[charsToTrim.Length+1];
                 repSol[0] =givenPractices.Solution;
                 for (int i = 0; i < charsToTrim.Length; i++)

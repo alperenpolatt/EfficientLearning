@@ -10,6 +10,6 @@ namespace EfLearning.Business.Responses
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Username { get; set; }
-        public int TotalScore { get; set; }
+        public int? TotalScore { get; set; }
     }
 }

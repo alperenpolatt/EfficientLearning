@@ -11,5 +11,6 @@ namespace EfLearning.Business.Responses
         public int Level { get; set; }
         public string Title { get; set; }
         public string ProgrammingType { get; set; }
+        public DateTime Date { get; set; }
     }
 }

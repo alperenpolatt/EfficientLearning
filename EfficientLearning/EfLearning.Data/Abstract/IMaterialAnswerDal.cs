@@ -11,6 +11,7 @@ namespace EfLearning.Data.Abstract
         Task<MaterialAnswer> DeleteByCompositeKeysAsync(int userId, int materialId);
         Task<ICollection<MaterialAnswer>> GetByMaterialIdWithUsersAsync(int materialId);
         Task<ICollection<MaterialAnswer>> GetWithMaterialAndUserAsync(int givenClassroomId);
+        Task<ICollection<MaterialAnswer>> GetWithMaterialAsync(int userId);
         Task<MaterialAnswer> UpdateAsync(MaterialAnswer entity);
     }
 }

@@ -35,7 +35,8 @@ namespace EfLearning.Data
             modelBuilder.Entity<Material>()
                     .HasOne(a => a.Announcement)
                     .WithOne(a => a.Material)
-                    .HasForeignKey<Announcement>(c => c.MaterialId);
+                    .HasForeignKey<Announcement>(c => c.MaterialId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TakenClassroom>()
                     .HasKey(tc => new { 

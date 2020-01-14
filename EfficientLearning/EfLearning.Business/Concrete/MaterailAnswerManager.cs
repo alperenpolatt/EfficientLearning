@@ -1,6 +1,7 @@
 ﻿using EfLearning.Business.Abstract;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Classrooms;
+using EfLearning.Data;
 using EfLearning.Data.Abstract;
 using System;
 using System.Collections.Generic;
@@ -95,7 +96,9 @@ namespace EfLearning.Business.Concrete
                         Name=item.FirstOrDefault().User.Name,
                         Surname=item.FirstOrDefault().User.Surname,
                         Username=item.FirstOrDefault().User.UserName,
-                        TotalScore=item.Sum(s=>s.Score)
+                        TotalScore=item.Where(s=>s.Material.MaterialScale!=0)
+                                        .Sum(s=>s.Score*(100/s.Material.MaterialScale))
+
                     });
                 }
                 var orderedResponse=response.OrderByDescending(a => a.TotalScore).ToList();
@@ -113,10 +116,10 @@ namespace EfLearning.Business.Concrete
             try
             {
                 var resultMaterialAnswer = await _materialAnswerDal.FindByAsync(ma => ma.UserId == userId);
-                return new BasexResponse<TotalScoreResponse>(new TotalScoreResponse
+                
+                return new BasexResponse<TotalScoreResponse>(new TotalScoreResponse(CustomRoles.Student)
                 {
-                    Total = resultMaterialAnswer.Sum(ma => ma.Score),
-                    Star = resultMaterialAnswer.Sum(ma => ma.Score) / 100
+                    Total = resultMaterialAnswer.Sum(ma => ma.Score * (100 / ma.Material.MaterialScale))
                 });
             }
             catch (Exception ex)

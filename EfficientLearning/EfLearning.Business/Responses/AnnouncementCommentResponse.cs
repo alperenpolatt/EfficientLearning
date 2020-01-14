@@ -1,4 +1,5 @@
 ﻿using EfLearning.Core.Announcements;
+using EfLearning.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,7 +27,7 @@ namespace EfLearning.Business.Responses
         public string Description { get; set; }
         public int AnnouncementId { get; set; }
         public DateTime CreationTime { get; set; }
-
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
+        public string Fullname { get; set; }
     }
 }

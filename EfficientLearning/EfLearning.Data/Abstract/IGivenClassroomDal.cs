@@ -11,5 +11,6 @@ namespace EfLearning.Data.Abstract
         Task<GivenClassroom> GetByIdWithTakenClasroomsAndStudentsAsync(int id);
         Task<int> GetNumberOfStudentsAsync(int userId);
         Task<ICollection<GivenClassroom>> GetBySearchTermAsync(string query);
+        Task<ICollection<GivenClassroom>> GetWithTakenClassroomAsync();
     }
 }

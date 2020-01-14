@@ -1,9 +1,11 @@
 ﻿using EfLearning.Business.Abstract;
 using EfLearning.Business.Responses;
 using EfLearning.Core.Classrooms;
+using EfLearning.Data;
 using EfLearning.Data.Abstract;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EfLearning.Business.Concrete
@@ -45,7 +47,7 @@ namespace EfLearning.Business.Concrete
             catch (Exception ex)
             {
 
-                return new BasexResponse<GivenClassroom>(ex.Message);
+                return new BasexResponse<GivenClassroom>(ex.Message.FirstOrDefault().ToString());
             }
         }
 
@@ -74,6 +76,27 @@ namespace EfLearning.Business.Concrete
             {
 
                 return new BasexResponse<GivenClassroom>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<ICollection<PopularClassResponse>>> GetByMostStudentsAsync()
+        {
+            try
+            {
+                var givenClassrooms = await _givenClassroomDal.GetWithTakenClassroomAsync();
+                var orderClass = givenClassrooms.OrderByDescending(o => o.TakenClassrooms.Count).Take(2);
+                var given = orderClass.Select(a => new PopularClassResponse
+                { 
+                    Description=a.Description,
+                    Id=a.Id,
+                    NumberOfStudens=a.TakenClassrooms.Count()
+                });
+                return new BasexResponse<ICollection<PopularClassResponse>>(given.ToList());
+            }
+            catch (Exception ex)
+            {
+
+                return new BasexResponse<ICollection<PopularClassResponse>>(ex.Message);
             }
         }
 
@@ -115,6 +138,21 @@ namespace EfLearning.Business.Concrete
             catch (Exception ex)
             {
                 return new BasexResponse<CountResponse>(ex.Message);
+            }
+        }
+
+        public async Task<BasexResponse<TotalScoreResponse>> GetTotalScore(int userId)
+        {
+            try
+            {
+                var result = await _givenClassroomDal.GetNumberOfStudentsAsync(userId);
+                return new BasexResponse<TotalScoreResponse>(new TotalScoreResponse(CustomRoles.Teacher) { 
+                    Total=await _givenClassroomDal.GetNumberOfStudentsAsync(userId),
+                });
+            }
+            catch (Exception ex)
+            {
+                return new BasexResponse<TotalScoreResponse>(ex.Message);
             }
         }
 

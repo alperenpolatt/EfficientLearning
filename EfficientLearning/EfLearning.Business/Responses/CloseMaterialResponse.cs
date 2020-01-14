@@ -11,5 +11,7 @@ namespace EfLearning.Business.Responses
         public string Description { get; set; }//from announcement
         public DateTime Deadline { get; set; }
         public DateTime CreationTime { get; set; }
+
+        public string OwnMaterial { get; set; }
     }
 }

@@ -41,6 +41,14 @@ namespace EfLearning.Data.Concrete
 
         }
 
+        public async Task<ICollection<MaterialAnswer>> GetWithMaterialAsync(int userId)
+        {
+            return await _context.MaterialAnswers
+                                .Where(ma => ma.UserId == userId)
+                                .Include(ma => ma.Material)
+                                .ToListAsync();
+        }
+
         public async Task<MaterialAnswer> UpdateAsync(MaterialAnswer entity)
         {
             if (entity == null)

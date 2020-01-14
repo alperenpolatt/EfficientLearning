@@ -66,6 +66,8 @@ namespace EfLearning.Api
             services.AddScoped<IDonePracticeService, DonePracticeManager>();
             services.AddScoped<IDonePracticeDal, DonePracticeDal>();
 
+            services.AddScoped<ICommonService, CommonManager>();
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddTransient<IEmailSender, EmailSender>();
 
